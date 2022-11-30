@@ -15,7 +15,7 @@ MonoBehaviour:
   active: 1
   skyType:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 4
   cloudType:
     m_OverrideState: 1
     m_Value: 1
@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Value: 0
   windSpeed:
     m_OverrideState: 1
-    m_Value: 17881
+    m_Value: 100
   fogType:
     m_OverrideState: 0
     m_Value: 0
@@ -64,10 +64,10 @@ MonoBehaviour:
     m_Value: 0.00001
   farFocusStart:
     m_OverrideState: 1
-    m_Value: 35
+    m_Value: 45
   farFocusEnd:
     m_OverrideState: 1
-    m_Value: 50
+    m_Value: 60
   m_NearSampleCount:
     m_OverrideState: 1
     m_Value: 8
@@ -282,8 +282,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   tint:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.39569244, g: 0.4899372, b: 0.7169812, a: 1}
   maxFogDistance:
     m_OverrideState: 0
     m_Value: 5000
@@ -304,13 +304,13 @@ MonoBehaviour:
     m_Value: 50
   meanFreePath:
     m_OverrideState: 1
-    m_Value: 35
+    m_Value: 45
   enableVolumetricFog:
     m_OverrideState: 1
     m_Value: 1
   albedo:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Value: {r: 0.5990566, g: 0.7453467, b: 1, a: 1}
   globalLightProbeDimmer:
     m_OverrideState: 1
     m_Value: 1

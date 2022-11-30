@@ -1,0 +1,4 @@
+Water Noise, Water Shader, and M_Water from:
+https://youtu.be/78WCzTVmc28
+
+(with value adjustments and 1 minor change to Position node in Water Noise sub graph)

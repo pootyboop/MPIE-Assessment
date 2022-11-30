@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 7453994753071233999}
   m_Layer: 0
   m_Name: Character
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +74,7 @@ Transform:
   m_GameObject: {fileID: 7453994753071233998}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000002, y: 1, z: 1.0000001}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7453994753414003106}
@@ -124,7 +124,11 @@ MonoBehaviour:
   gliderMesh: {fileID: 7759844467290279431}
   clothCollision: {fileID: 1826299538331689355}
   useInput: 1
-  moveSpeed: 5
+  moveSpeed: 6.5
+  useSprint: 0
+  sprintSpeedMultiplier: 1.5
+  crouchSpeedMultiplier: 0.5
+  waterSpeedMultiplier: 0.8
   jumpHeight: 1
   baseGravity: 9.81
   glideGravity: 1
@@ -188,9 +192,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.05
   far clip plane: 1000
-  field of view: 75
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -300,12 +304,12 @@ MonoBehaviour:
     sssQualityMode: 0
     sssQualityLevel: 0
     sssCustomSampleBudget: 20
-    msaaMode: 1
+    msaaMode: 9
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
     mask:
       data1: 16
-      data2: 0
+      data2: 131072
   defaultFrameSettings: 0
   m_Version: 8
   m_ObsoleteRenderingPath: 0

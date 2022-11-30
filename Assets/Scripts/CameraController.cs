@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        //general concepts from:
+        //credit:
         //https://youtu.be/f473C43s8nE
         //http://gyanendushekhar.com/2020/02/06/first-person-movement-in-unity-3d/
 

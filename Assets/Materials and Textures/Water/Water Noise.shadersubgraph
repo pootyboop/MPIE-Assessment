@@ -70,7 +70,11 @@
             "m_Id": "4797bdd7c31c42c9963757673664de05"
         }
     ],
-    "m_GroupDatas": [],
+    "m_GroupDatas": [
+        {
+            "m_Id": "c0a96446935f4b2990059ccdf2acd75c"
+        }
+    ],
     "m_StickyNoteDatas": [],
     "m_Edges": [
         {
@@ -922,7 +926,7 @@
     },
     "m_Name": "Tiling And Offset",
     "m_DrawState": {
-        "m_Expanded": true,
+        "m_Expanded": false,
         "m_Position": {
             "serializedVersion": "2",
             "x": 11.4998779296875,
@@ -1426,6 +1430,17 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.GroupData",
+    "m_ObjectId": "c0a96446935f4b2990059ccdf2acd75c",
+    "m_Title": "1 minor change from tutorial - set Space to Absolute World (was World)",
+    "m_Position": {
+        "x": 10.0,
+        "y": 10.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "c68f68089b764998bc1562f7b6f0f1cb",
     "m_Id": 3,
@@ -1726,17 +1741,17 @@
     "m_Type": "UnityEditor.ShaderGraph.PositionNode",
     "m_ObjectId": "df39ed00dec84341ab4ba096e7db5f6e",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "c0a96446935f4b2990059ccdf2acd75c"
     },
     "m_Name": "Position",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -576.5,
+            "x": -1195.0,
             "y": -171.00001525878907,
-            "width": 208.0,
-            "height": 315.0000305175781
+            "width": 206.0,
+            "height": 130.99998474121095
         }
     },
     "m_Slots": [
@@ -1753,7 +1768,7 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 2,
+    "m_Space": 4,
     "m_PositionSource": 0
 }
 

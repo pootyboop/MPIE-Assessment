@@ -58,9 +58,6 @@
             "m_Id": "5d9124b184af431781446b084148a337"
         },
         {
-            "m_Id": "47965b823cf54b67ac0b214b27268ff8"
-        },
-        {
             "m_Id": "253d384590f943b48682d182fde857b6"
         },
         {
@@ -913,9 +910,6 @@
                 "m_Id": "fda09ed6b9284a2ba85448e267ce4f27"
             },
             {
-                "m_Id": "47965b823cf54b67ac0b214b27268ff8"
-            },
-            {
                 "m_Id": "253d384590f943b48682d182fde857b6"
             },
             {
@@ -1141,7 +1135,7 @@
     "m_TransparentDepthPrepass": false,
     "m_TransparentDepthPostpass": false,
     "m_SupportLodCrossFade": false,
-    "m_DoubleSidedMode": 0,
+    "m_DoubleSidedMode": 1,
     "m_DOTSInstancing": false,
     "m_CustomVelocity": false,
     "m_Tessellation": false,
@@ -1153,7 +1147,7 @@
     "m_TessellationBackFaceCullEpsilon": -0.25,
     "m_TessellationMaxDisplacement": 0.009999999776482582,
     "m_Version": 1,
-    "inspectorFoldoutMask": 0
+    "inspectorFoldoutMask": 9
 }
 
 {
@@ -1908,30 +1902,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.NormalMaterialSlot",
-    "m_ObjectId": "2599a20049654a1bb4c424839c5c7892",
-    "m_Id": 0,
-    "m_DisplayName": "Bent Normal",
-    "m_SlotType": 0,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "BentNormal",
-    "m_StageCapability": 2,
-    "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-    },
-    "m_DefaultValue": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-    },
-    "m_Labels": [],
-    "m_Space": 3
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
     "m_ObjectId": "2615f48cd4514ff8a981374cf3606883",
     "m_Id": 0,
@@ -2467,39 +2437,6 @@
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
-    "m_ObjectId": "47965b823cf54b67ac0b214b27268ff8",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "SurfaceDescription.BentNormal",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "2599a20049654a1bb4c424839c5c7892"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_SerializedDescriptor": "SurfaceDescription.BentNormal"
 }
 
 {
@@ -4133,9 +4070,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 528.0000610351563,
-            "y": 412.0,
-            "width": 139.99993896484376,
+            "x": 528.0,
+            "y": 370.0,
+            "width": 140.0,
             "height": 34.000030517578128
         }
     },
@@ -4761,7 +4698,7 @@
     "m_AddPrecomputedVelocity": false,
     "m_TransparentWritesMotionVec": false,
     "m_AlphaToMask": false,
-    "m_DepthOffset": false,
+    "m_DepthOffset": true,
     "m_ConservativeDepthOffset": false,
     "m_TransparencyFog": true,
     "m_AlphaTestShadow": false,

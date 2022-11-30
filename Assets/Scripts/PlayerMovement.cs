@@ -4,30 +4,43 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    //references
     CharacterController charController;
     public Camera cam;
     public GameObject gliderMesh;
-    public GameObject clothCollision;
+    public GameObject clothCollision;   //collides with cloths (e.g. cloths on doors) since CharacterController doesn't have a referenceable capsule collider
     private CapsuleCollider clothCapsule;
 
+    //half height of the player collision capsule
+    //cloth collision should always be halfHeight * 2 - 0.1 to prevent collision issues
     public const float halfHeight = 1.0f;
 
+    //public movement
     public bool useInput = true;
     public float moveSpeed = 5.0f;
-    public const float sprintMultiplier = 1.5f;
-    public const float crouchMultiplier = 0.5f;
+    public bool useSprint = false;  //enable/disable sprinting entirely
+    public float sprintSpeedMultiplier = 1.5f;
+    public float crouchSpeedMultiplier = 0.5f;
+    public float waterSpeedMultiplier = 0.8f;
     public float jumpHeight = 1.0f;
     public float baseGravity = 9.81f;
     public float glideGravity = 3.0f;
-    public float glideMaxVerticalVelocity = 1.5f;
+    public float glideMaxVerticalVelocity = 1.5f; //the cap of how fast the player can go up/down while gliding
 
+    //private movement state
     private bool isCrouching = false;
     private bool isGliding = false;
     private bool isGrounded;
     private float groundedTimer;
     private float verticalVelocity;
-    private float gravity;
+    private float gravity;  //currently active gravity
 
+    //private consts
+    private const float gliderTilt = 22.5f;
+
+    //water
+    private bool isInWater;
+    private List<GameObject> overlappedWaterPlanes; //all water planes currently overlapped by the player - used to ensure isInWater stays true when moving across water planes
 
 
     void Start()
@@ -35,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
         charController = GetComponent<CharacterController>();
         clothCapsule = clothCollision.GetComponent<CapsuleCollider>();
         gravity = baseGravity;
+
+        overlappedWaterPlanes = new List<GameObject>();
     }
 
 
@@ -48,6 +63,42 @@ public class PlayerMovement : MonoBehaviour
             UpdateGliding();
             UpdateCrouch();
             Move();
+        }
+    }
+
+
+
+    private void FixedUpdate()
+    {
+        UpdateGliderTilt();
+    }
+
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //water
+        if (other.gameObject.tag == "Water")
+        {
+            overlappedWaterPlanes.Add(other.gameObject);
+            isInWater = true;
+
+            TryCrouchStop();
+        }
+    }
+
+
+
+    private void OnTriggerExit(Collider other)
+    {
+        //water
+        if (other.gameObject.tag == "Water")
+        {
+            overlappedWaterPlanes.Remove(other.gameObject);
+            if (overlappedWaterPlanes.Count == 0)
+            {
+                isInWater = false;
+            }
         }
     }
 
@@ -79,24 +130,38 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateGliding()
     {
-        if (Input.GetButtonDown("Jump") && !isGliding && groundedTimer == 0)
+        if (Input.GetButtonDown("Jump"))
         {
-            GlideStart();
+            if (!isGliding)
+            {
+                TryGlideStart();
+            }
+
+            else
+            {
+                TryGlideStop();
+            }
         }
 
-        else if (Input.GetButtonUp("Jump") && isGliding)
+        //hold
+        /*
+        else if (Input.GetButtonUp("Jump"))
         {
-            GlideStop();
+            TryGlideStop();
         }
+        */
     }
 
 
 
-    void GlideStart()
+    void TryGlideStart()
     {
-        gravity = glideGravity;
-        isGliding = true;
-        gliderMesh.SetActive(true);
+        if (!isGliding && groundedTimer == 0)
+        {
+            gravity = glideGravity;
+            isGliding = true;
+            gliderMesh.SetActive(true);
+        }
     }
 
 
@@ -113,54 +178,52 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    void GlideStop()
-    {
-        gravity = baseGravity;
-        isGliding = false;
-        gliderMesh.SetActive(false);
-    }
-
-
-
     void UpdateCrouch()
     {
-        if (Input.GetButtonDown("Crouch") && !isCrouching && isGrounded)
+        if (Input.GetButtonDown("Crouch"))
         {
-            CrouchStart();
+            TryCrouchStart();
         }
 
-        else if (Input.GetButtonUp("Crouch") && isCrouching)
+        else if (Input.GetButtonUp("Crouch"))
         {
-            CrouchStop();
+            TryCrouchStop();
         }
     }
 
 
 
-    void CrouchStart()
+    void TryCrouchStart()
     {
-        isCrouching = true;
-        //cam.transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight / 2, transform.position.z);
-        transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
-        charController.height = halfHeight;
-        clothCapsule.height = halfHeight - 0.1f;
+        if (!isCrouching && isGrounded && !isInWater)
+        {
+            isCrouching = true;
+            charController.height = halfHeight;
+            clothCapsule.height = halfHeight - 0.1f;
+            //cam.transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight / 2, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
+        }
     }
 
 
 
-    void CrouchStop()
+    void TryCrouchStop()
     {
-        isCrouching = false;
-        //cam.transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight / 2, transform.position.z);
-        transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
-        charController.height = halfHeight * 2;
-        clothCapsule.height = halfHeight * 2 - 0.1f;
+        if (isCrouching)
+        {
+            isCrouching = false;
+            //cam.transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight / 2, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
+            charController.height = halfHeight * 2;
+            clothCapsule.height = halfHeight * 2 - 0.1f;
+        }
     }
 
 
 
     void Move()
     {
+        //credit for Move() and GetJumpHeight():
         //https://youtu.be/7kGCrq1cJew
         //https://forum.unity.com/threads/how-to-correctly-setup-3d-character-movement-in-unity.981939/#post-6379746
 
@@ -178,20 +241,50 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = (forwardRelativeInput + rightRelativeInput) * moveSpeed;
 
+        //UpdateGliderTilt();
+
         if (isCrouching)
         {
-            move *= crouchMultiplier;
+            move *= crouchSpeedMultiplier;
         }
         
-        else if (Input.GetButton("Sprint"))
+        //useSprint is disabled by default
+        else if (Input.GetButton("Sprint") && useSprint)
         {
-            move *= sprintMultiplier;
+            move *= sprintSpeedMultiplier;
         }
+
+        if (isInWater)
+        {
+            move *= waterSpeedMultiplier;
+        }
+
+
+
+
 
         //Y MOVEMENT
         //prevent bouncing
         move.y = GetJumpHeight();
         charController.Move(move * Time.deltaTime);
+    }
+
+
+
+    void UpdateGliderTilt()
+    {
+        if (isGliding)
+        {
+            float gliderY = gliderMesh.transform.rotation.y;
+            Quaternion newRot = Quaternion.RotateTowards(gliderMesh.transform.rotation, Quaternion.LookRotation(charController.velocity.normalized), 360 * Time.fixedDeltaTime);
+            gliderMesh.transform.rotation = Quaternion.Euler(newRot.x, gliderY, newRot.z);
+            /*
+            float horizontalInputAlpha = (Input.GetAxis("Horizontal") / 2) + 0.5f;
+            float gliderY = Mathf.Lerp(-gliderTilt, gliderTilt, horizontalInputAlpha);
+
+            gliderMesh.transform.localRotation = Quaternion.Euler(gliderMesh.transform.localRotation.x, gliderY, gliderMesh.transform.localRotation.z);
+            */
+        }
     }
 
 
@@ -208,7 +301,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && groundedTimer > 0)
         {
-            CrouchStop();
+            TryCrouchStop();
 
             groundedTimer = 0;
             verticalVelocity += Mathf.Sqrt(jumpHeight * 2 * gravity);
