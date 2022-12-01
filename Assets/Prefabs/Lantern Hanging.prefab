@@ -183,7 +183,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5883720296852293510, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.01217
+      value: -0.01055
       objectReference: {fileID: 0}
     - target: {fileID: 5883720296852293510, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}
       propertyPath: m_LocalRotation.w
@@ -216,6 +216,14 @@ PrefabInstance:
     - target: {fileID: 6551889473726274876, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}
       propertyPath: m_Name
       value: Lantern
+      objectReference: {fileID: 0}
+    - target: {fileID: 8574636765114592273, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}
+      propertyPath: m_Height
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 8574636765114592273, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}
+      propertyPath: m_Radius
+      value: 0.0027
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0961e855f69bc3049898d2fa1b47ec03, type: 3}

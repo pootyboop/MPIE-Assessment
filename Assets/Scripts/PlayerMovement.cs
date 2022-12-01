@@ -132,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
+            //toggle
             if (!isGliding)
             {
                 TryGlideStart();
@@ -209,7 +210,7 @@ public class PlayerMovement : MonoBehaviour
 
     void TryCrouchStop()
     {
-        if (isCrouching)
+        if (isCrouching && CanStand())
         {
             isCrouching = false;
             //cam.transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight / 2, transform.position.z);
@@ -217,6 +218,19 @@ public class PlayerMovement : MonoBehaviour
             charController.height = halfHeight * 2;
             clothCapsule.height = halfHeight * 2 - 0.1f;
         }
+    }
+
+
+
+    bool CanStand()
+    {
+        
+        if (Physics.Raycast(transform.position, charController.transform.up, halfHeight * 1.5f) == true)
+        {
+            return false;
+        }
+        
+        return true;
     }
 
 
