@@ -7,9 +7,9 @@ public class Ladder : MonoBehaviour
     //script adapted from:
     //https://youtu.be/138WGOIgUeI
 
-    public PlayerMovement mvmtScript;
     public GameObject player;
-    public float climbSpeed = 12f;
+    private PlayerMovement mvmtScript;
+    public float climbSpeed = 0.5f;
 
     private bool isClimbed = false;
 
@@ -28,7 +28,7 @@ public class Ladder : MonoBehaviour
         {
             if (Input.GetButtonDown("Jump"))
             {
-                use(false);
+                Use(false);
             }
 
             else if (Input.GetAxis("Vertical") > 0)
@@ -47,25 +47,26 @@ public class Ladder : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        use(true);
+        Use(true);
     }
 
 
 
     private void OnTriggerExit(Collider other)
     {
-        use(false);
+        Use(false);
     }
 
 
 
-    void use(bool use)
+    void Use(bool use)
     {
         if (use)
         {
             isClimbed = true;
             mvmtScript.useInput = false;
             mvmtScript.TryGlideStop();
+            mvmtScript.TryCrouchStop();
 
         }
 

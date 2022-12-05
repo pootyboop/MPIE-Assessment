@@ -25,15 +25,20 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 1.0f;
     public float baseGravity = 9.81f;
     public float glideGravity = 3.0f;
-    public float glideMaxVerticalVelocity = 1.5f; //the cap of how fast the player can go up/down while gliding
+    public float glideMaxVerticalVelocity = 1.5f;   //the cap of how fast the player can go up/down while gliding
+    public float airCannonBoostStrength = 10.0f;    //strength of air cannon boosts
+    public float airCannonMaxTime = 0.5f;           //how long air cannon blasts last after leaving the air cannon's trigger collider
+    public float airCannonVerticalVelocityFalloffTime = 0.4f;   //how much vertical velocity returns at the end of a air cannon blast
 
     //private movement state
     private bool isCrouching = false;
+    private bool tryingToStand = false;
     private bool isGliding = false;
     private bool isGrounded;
     private float groundedTimer;
     private float verticalVelocity;
     private float gravity;  //currently active gravity
+    private Vector3 airCannonMove;
 
     //private consts
     private const float gliderTilt = 22.5f;
@@ -41,6 +46,10 @@ public class PlayerMovement : MonoBehaviour
     //water
     private bool isInWater;
     private List<GameObject> overlappedWaterPlanes; //all water planes currently overlapped by the player - used to ensure isInWater stays true when moving across water planes
+
+    //air cannon
+    private float airCannonTimer;
+    private GameObject overlappedAirCannon;
 
 
     void Start()
@@ -70,20 +79,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        UpdateGliderTilt();
+        //UpdateGliderTilt();
     }
 
 
 
     private void OnTriggerEnter(Collider other)
     {
-        //water
-        if (other.gameObject.tag == "Water")
+        switch (other.gameObject.tag)
         {
-            overlappedWaterPlanes.Add(other.gameObject);
-            isInWater = true;
+            case "Water":
+                overlappedWaterPlanes.Add(other.gameObject);
+                isInWater = true;
 
-            TryCrouchStop();
+                TryCrouchStop();
+
+                break;
+
+            case "Air Cannon":
+                airCannonTimer = airCannonMaxTime;
+                overlappedAirCannon = other.gameObject;
+                airCannonMove = AirCannonBoost(overlappedAirCannon);
+                break;
         }
     }
 
@@ -91,15 +108,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        //water
-        if (other.gameObject.tag == "Water")
+        switch (other.gameObject.tag)
         {
-            overlappedWaterPlanes.Remove(other.gameObject);
-            if (overlappedWaterPlanes.Count == 0)
-            {
-                isInWater = false;
-            }
+            case "Water":
+                overlappedWaterPlanes.Remove(other.gameObject);
+                if (overlappedWaterPlanes.Count == 0)
+                {
+                    isInWater = false;
+                }
+
+                break;
+
+            case "Air Cannon":
+                overlappedAirCannon = null;
+                break;
         }
+    }
+
+
+
+    Vector3 AirCannonBoost(GameObject airCannon)
+    {
+        Vector3 finalBoost = airCannon.GetComponent<AirCannon>().Boost() * airCannonBoostStrength;
+        //print(finalBoost);
+        //rb.AddForce(finalBoost);
+        return (finalBoost);
     }
 
 
@@ -157,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
 
     void TryGlideStart()
     {
-        if (!isGliding && groundedTimer == 0)
+        if (!isGliding && groundedTimer <= 0)
         {
             gravity = glideGravity;
             isGliding = true;
@@ -183,11 +216,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Crouch"))
         {
+            tryingToStand = false;
             TryCrouchStart();
         }
 
-        else if (Input.GetButtonUp("Crouch"))
+        else if (Input.GetButtonUp("Crouch") || tryingToStand)
         {
+            tryingToStand = true;
             TryCrouchStop();
         }
     }
@@ -208,9 +243,12 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    void TryCrouchStop()
+    public void TryCrouchStop()
     {
-        if (isCrouching && CanStand())
+        bool canStand = CanStand();
+        tryingToStand = !canStand;
+
+        if (isCrouching && canStand)
         {
             isCrouching = false;
             //cam.transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight / 2, transform.position.z);
@@ -237,12 +275,37 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        //credit for Move() and GetJumpHeight():
+        //credit for GetDesiredMvmt() and GetJumpHeight():
         //https://youtu.be/7kGCrq1cJew
         //https://forum.unity.com/threads/how-to-correctly-setup-3d-character-movement-in-unity.981939/#post-6379746
 
-
         //X AND Z MOVEMENT
+        Vector3 move = GetDesiredMvmt();
+
+        //UpdateGliderTilt();
+
+        move = ApplySpeedModifiers(move);
+
+        //Y MOVEMENT
+        move.y = GetJumpHeight();
+
+
+
+        if (overlappedAirCannon == null && airCannonTimer > 0)
+        {
+            airCannonTimer -= Time.deltaTime;
+        }
+
+        float airCannonTimerAlpha = airCannonTimer / airCannonMaxTime;
+        Vector3 finalMove = Vector3.Lerp(move, airCannonMove, airCannonTimerAlpha);
+
+        charController.Move(finalMove * Time.deltaTime);
+    }
+
+
+
+    Vector3 GetDesiredMvmt()
+    {
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
         forward.y = 0;
@@ -253,15 +316,18 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forwardRelativeInput = forward * Input.GetAxis("Vertical");
         Vector3 rightRelativeInput = right * Input.GetAxis("Horizontal");
 
-        Vector3 move = (forwardRelativeInput + rightRelativeInput) * moveSpeed;
+        return (forwardRelativeInput + rightRelativeInput) * moveSpeed;
+    }
 
-        //UpdateGliderTilt();
 
+
+    Vector3 ApplySpeedModifiers(Vector3 move)
+    {
         if (isCrouching)
         {
             move *= crouchSpeedMultiplier;
         }
-        
+
         //useSprint is disabled by default
         else if (Input.GetButton("Sprint") && useSprint)
         {
@@ -273,14 +339,7 @@ public class PlayerMovement : MonoBehaviour
             move *= waterSpeedMultiplier;
         }
 
-
-
-
-
-        //Y MOVEMENT
-        //prevent bouncing
-        move.y = GetJumpHeight();
-        charController.Move(move * Time.deltaTime);
+        return move;
     }
 
 
@@ -305,25 +364,36 @@ public class PlayerMovement : MonoBehaviour
 
     float GetJumpHeight()
     {
-        if (isGrounded && verticalVelocity < 0)
+        //prevent the player from immediately falling supa dupa fast when air cannon boost ends
+        if (airCannonTimer / airCannonMaxTime > airCannonVerticalVelocityFalloffTime)
         {
-            verticalVelocity = 0f;
+            verticalVelocity = 0.0f;
         }
 
-        verticalVelocity -= gravity * Time.deltaTime;
-
-
-        if (Input.GetButtonDown("Jump") && groundedTimer > 0)
+        else
         {
-            TryCrouchStop();
 
-            groundedTimer = 0;
-            verticalVelocity += Mathf.Sqrt(jumpHeight * 2 * gravity);
-        }
+            //prevent bouncing
+            if (isGrounded && verticalVelocity < 0)
+            {
+                verticalVelocity = 0f;
+            }
 
-        if (isGliding)
-        {
-            verticalVelocity = Mathf.Clamp(verticalVelocity, -glideMaxVerticalVelocity, glideMaxVerticalVelocity);
+            verticalVelocity -= gravity * Time.deltaTime;
+
+
+            if (Input.GetButtonDown("Jump") && groundedTimer > 0)
+            {
+                TryCrouchStop();
+
+                groundedTimer = 0;
+                verticalVelocity += Mathf.Sqrt(jumpHeight * 2 * gravity);
+            }
+
+            if (isGliding)
+            {
+                verticalVelocity = Mathf.Clamp(verticalVelocity, -glideMaxVerticalVelocity, glideMaxVerticalVelocity);
+            }
         }
 
         return verticalVelocity;

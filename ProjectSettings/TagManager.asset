@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ladder
   - Water
+  - Air Cannon
   layers:
   - Default
   - TransparentFX
