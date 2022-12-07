@@ -8,53 +8,60 @@ public class PlayerMovement : MonoBehaviour
     CharacterController charController;
     public Camera cam;
     public GameObject gliderMesh;
+    public GameObject gliderCloths;
+    private Animator gliderAnim;
+    public GameObject speedLines;
+    private SpeedLines speedLinesScript;
     public GameObject clothCollision;   //collides with cloths (e.g. cloths on doors) since CharacterController doesn't have a referenceable capsule collider
     private CapsuleCollider clothCapsule;
+    public GameObject landingParticles;
 
     //half height of the player collision capsule
     //cloth collision should always be halfHeight * 2 - 0.1 to prevent collision issues
     public const float halfHeight = 1.0f;
 
     //public movement
-    public bool useInput = true;
+    public bool useInput = true;    //whether or not to accept player input
     public float moveSpeed = 5.0f;
     public bool useSprint = false;  //enable/disable sprinting entirely
     public float sprintSpeedMultiplier = 1.5f;
     public float crouchSpeedMultiplier = 0.5f;
     public float waterSpeedMultiplier = 0.8f;
     public float jumpHeight = 1.0f;
-    public float baseGravity = 9.81f;
-    public float glideGravity = 3.0f;
+    public float baseGravity = 9.81f;   //default movement gravity
+    public float glideGravity = 3.0f;   //gravity when gliding
     public float glideMaxVerticalVelocity = 1.5f;   //the cap of how fast the player can go up/down while gliding
     public float airCannonBoostStrength = 10.0f;    //strength of air cannon boosts
-    public float airCannonMaxTime = 0.5f;           //how long air cannon blasts last after leaving the air cannon's trigger collider
+    public float airCannonMaxTime = 0.5f;           //how long air cannon blasts last after leaving the air cannon's trigger collision
     public float airCannonVerticalVelocityFalloffTime = 0.4f;   //how much vertical velocity returns at the end of a air cannon blast
 
-    //private movement state
+    //private movement
     private bool isCrouching = false;
     private bool tryingToStand = false;
     private bool isGliding = false;
     private bool isGrounded;
     private float groundedTimer;
     private float verticalVelocity;
+    private float previousVerticalVelocity;
     private float gravity;  //currently active gravity
-    private Vector3 airCannonMove;
-
-    //private consts
-    private const float gliderTilt = 22.5f;
+    private Vector3 airCannonMove;  //the movement vector from air cannon
+    private const float gliderTilt = 22.5f; //how much the glider mesh can tilt
+    private Vector3 respawnPosition;
 
     //water
     private bool isInWater;
     private List<GameObject> overlappedWaterPlanes; //all water planes currently overlapped by the player - used to ensure isInWater stays true when moving across water planes
 
     //air cannon
-    private float airCannonTimer;
+    private float airCannonTimer;   //the timer for lerping between player and air cannon movement after leaving the air cannon's trigger collision
     private GameObject overlappedAirCannon;
 
 
     void Start()
     {
+        gliderAnim = gliderMesh.GetComponent<Animator>();
         charController = GetComponent<CharacterController>();
+        speedLinesScript = speedLines.GetComponent<SpeedLines>();
         clothCapsule = clothCollision.GetComponent<CapsuleCollider>();
         gravity = baseGravity;
 
@@ -73,6 +80,10 @@ public class PlayerMovement : MonoBehaviour
             UpdateCrouch();
             Move();
         }
+
+        CheckIfFallen();
+
+        previousVerticalVelocity = verticalVelocity;
     }
 
 
@@ -100,6 +111,9 @@ public class PlayerMovement : MonoBehaviour
                 airCannonTimer = airCannonMaxTime;
                 overlappedAirCannon = other.gameObject;
                 airCannonMove = AirCannonBoost(overlappedAirCannon);
+
+                speedLines.SetActive(true);
+                speedLinesScript.SetOpacity(1.0f);
                 break;
         }
     }
@@ -131,7 +145,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 finalBoost = airCannon.GetComponent<AirCannon>().Boost() * airCannonBoostStrength;
         //print(finalBoost);
-        //rb.AddForce(finalBoost);
         return (finalBoost);
     }
 
@@ -139,6 +152,16 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateGrounded()
     {
+        if (!charController.isGrounded && isGrounded)
+        {
+            respawnPosition = transform.position;
+        }
+
+        else if (charController.isGrounded && !isGrounded && previousVerticalVelocity <= -glideMaxVerticalVelocity)
+        {
+            LandingParticles();
+        }
+
         isGrounded = charController.isGrounded;
         if (isGrounded)
         {
@@ -161,11 +184,20 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    void LandingParticles()
+    {
+        Vector3 landingParticlesSpawn = transform.position;
+        landingParticlesSpawn.y -= halfHeight;
+        Instantiate(landingParticles, landingParticlesSpawn, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+    }
+
+
+
     void UpdateGliding()
     {
         if (Input.GetButtonDown("Jump"))
         {
-            //toggle
+            //toggle button
             if (!isGliding)
             {
                 TryGlideStart();
@@ -177,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        //hold
+        //hold button
         /*
         else if (Input.GetButtonUp("Jump"))
         {
@@ -194,7 +226,9 @@ public class PlayerMovement : MonoBehaviour
         {
             gravity = glideGravity;
             isGliding = true;
-            gliderMesh.SetActive(true);
+            gliderCloths.SetActive(true);
+
+            gliderAnim.SetBool("isGliding", true);
         }
     }
 
@@ -206,7 +240,9 @@ public class PlayerMovement : MonoBehaviour
         {
             gravity = baseGravity;
             isGliding = false;
-            gliderMesh.SetActive(false);
+
+            gliderAnim.SetBool("isGliding", false);
+            gliderCloths.SetActive(false);
         }
     }
 
@@ -236,7 +272,6 @@ public class PlayerMovement : MonoBehaviour
             isCrouching = true;
             charController.height = halfHeight;
             clothCapsule.height = halfHeight - 0.1f;
-            //cam.transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight / 2, transform.position.z);
             transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
         }
     }
@@ -251,7 +286,6 @@ public class PlayerMovement : MonoBehaviour
         if (isCrouching && canStand)
         {
             isCrouching = false;
-            //cam.transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight / 2, transform.position.z);
             transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
             charController.height = halfHeight * 2;
             clothCapsule.height = halfHeight * 2 - 0.1f;
@@ -263,6 +297,7 @@ public class PlayerMovement : MonoBehaviour
     bool CanStand()
     {
         
+        //check above the player's head (their height if they were standing)
         if (Physics.Raycast(transform.position, charController.transform.up, halfHeight * 1.5f) == true)
         {
             return false;
@@ -286,9 +321,6 @@ public class PlayerMovement : MonoBehaviour
 
         move = ApplySpeedModifiers(move);
 
-        //Y MOVEMENT
-        move.y = GetJumpHeight();
-
 
 
         if (overlappedAirCannon == null && airCannonTimer > 0)
@@ -297,6 +329,27 @@ public class PlayerMovement : MonoBehaviour
         }
 
         float airCannonTimerAlpha = airCannonTimer / airCannonMaxTime;
+
+
+
+        //Y MOVEMENT
+        move.y = GetJumpHeight(airCannonTimerAlpha);
+
+
+
+        if (airCannonTimerAlpha > 0)
+        {
+            speedLinesScript.SetOpacity(airCannonTimerAlpha);
+        }
+
+        else if (speedLines.activeSelf)
+        {
+            speedLines.SetActive(false);
+        }
+
+
+
+        //lerp between normal and air cannon movement based on the timer alpha
         Vector3 finalMove = Vector3.Lerp(move, airCannonMove, airCannonTimerAlpha);
 
         charController.Move(finalMove * Time.deltaTime);
@@ -362,10 +415,10 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    float GetJumpHeight()
+    float GetJumpHeight(float airCannonTimerAlpha)
     {
         //prevent the player from immediately falling supa dupa fast when air cannon boost ends
-        if (airCannonTimer / airCannonMaxTime > airCannonVerticalVelocityFalloffTime)
+        if (airCannonTimerAlpha > airCannonVerticalVelocityFalloffTime)
         {
             verticalVelocity = 0.0f;
         }
@@ -397,5 +450,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return verticalVelocity;
+    }
+
+
+
+    void CheckIfFallen()
+    {
+        if (transform.position.y < -20f)
+        {
+            transform.position = respawnPosition;
+        }
     }
 }

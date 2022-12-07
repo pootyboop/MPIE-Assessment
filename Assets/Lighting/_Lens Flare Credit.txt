@@ -1,0 +1,4 @@
+Sun Lens Flare settings very loosely based on:
+https://rpmorgan.medium.com/create-a-lens-flare-in-unity-2021-using-hdrp-c31d6d3fe3ee
+
+Not sure if I need to credit this or not so just playing it safe
