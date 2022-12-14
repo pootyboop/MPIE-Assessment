@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class ParticleAutoDestroy : MonoBehaviour
 {
-    private ParticleSystem particleSystem;
+    private ParticleSystem particles;
 
     void Start()
     {
         //destroy the particle system after its duration
-        particleSystem = GetComponent<ParticleSystem>();
+        particles = GetComponent<ParticleSystem>();
     }
 
     private void Update()
     {
-        if (!particleSystem.IsAlive())
+        if (!particles.IsAlive())
         {
             Destroy(gameObject);
         }

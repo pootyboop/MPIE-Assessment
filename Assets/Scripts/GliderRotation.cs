@@ -31,17 +31,10 @@ public class GliderRotation : MonoBehaviour
         */
 
         //print(obj.rotation);
-        //float xRot = obj.localRotation.x; //map(obj.rotation.x, -90f, 90f, -1f, 1f);
+        //float xRot = obj.localRotation.x;
         //transform.localRotation = Quaternion.Euler(0f, transform.localRotation.y, transform.localRotation.z);
         //transform.LookAt(obj);
 
         //transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
-    }
-
-
-
-    float map(float s, float a1, float a2, float b1, float b2)
-    {
-        return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 }

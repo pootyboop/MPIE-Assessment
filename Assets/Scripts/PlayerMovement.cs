@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+
+    //==================================================================VARIABLES==================================================================\\
+
     //references
     CharacterController charController;
     public Camera cam;
@@ -46,7 +49,8 @@ public class PlayerMovement : MonoBehaviour
     private float gravity;  //currently active gravity
     private Vector3 airCannonMove;  //the movement vector from air cannon
     private const float gliderTilt = 22.5f; //how much the glider mesh can tilt
-    private Vector3 respawnPosition;
+    private float respawnY = -20.0f;    //the Y position past which the player gets respawned at respawnPosition
+    private Vector3 respawnPosition;    //the player's last grounded position
 
     //water
     private bool isInWater;
@@ -54,11 +58,21 @@ public class PlayerMovement : MonoBehaviour
 
     //air cannon
     private float airCannonTimer;   //the timer for lerping between player and air cannon movement after leaving the air cannon's trigger collision
-    private GameObject overlappedAirCannon;
+    private GameObject overlappedAirCannon; //the air cannon the player is getting boosted by
+
+    //characters
+    private GameObject nearCharacter;   //the character the player is currently able to interact with
+    private Character nearCharacterScript;   //character script
+    public float lookDistance = 3.0f;   //how far away the player can interact with characters from
+    private int booksLeft; //how many books the player has left to deliver
+
+    //=============================================================================================================================================\\
+
 
 
     void Start()
     {
+        //init variables/references
         gliderAnim = gliderMesh.GetComponent<Animator>();
         charController = GetComponent<CharacterController>();
         speedLinesScript = speedLines.GetComponent<SpeedLines>();
@@ -66,12 +80,18 @@ public class PlayerMovement : MonoBehaviour
         gravity = baseGravity;
 
         overlappedWaterPlanes = new List<GameObject>();
+
+        booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
+        print("Books left: " + booksLeft);
     }
 
 
 
     void Update()
     {
+        //GetLookedAtCharacter();
+        UpdateInteractions();
+
         UpdateGrounded();
 
         if (useInput)
@@ -81,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
             Move();
         }
 
+        //check if player fell to respawnY
         CheckIfFallen();
 
         previousVerticalVelocity = verticalVelocity;
@@ -115,6 +136,11 @@ public class PlayerMovement : MonoBehaviour
                 speedLines.SetActive(true);
                 speedLinesScript.SetOpacity(1.0f);
                 break;
+
+            case "Character":
+                nearCharacter = other.gameObject;
+                nearCharacterScript = nearCharacter.GetComponent<Character>();
+                break;
         }
     }
 
@@ -136,6 +162,11 @@ public class PlayerMovement : MonoBehaviour
             case "Air Cannon":
                 overlappedAirCannon = null;
                 break;
+
+            case "Character":
+                nearCharacter = null;
+                nearCharacterScript = null;
+                break;
         }
     }
 
@@ -146,6 +177,44 @@ public class PlayerMovement : MonoBehaviour
         Vector3 finalBoost = airCannon.GetComponent<AirCannon>().Boost() * airCannonBoostStrength;
         //print(finalBoost);
         return (finalBoost);
+    }
+
+
+
+    void UpdateInteractions()
+    {
+        //player trying to interact?
+        if (Input.GetButtonDown("Interact"))
+        {
+            if (nearCharacter != null)
+            {
+                if (nearCharacterScript.TryGiveBook())
+                {
+                    booksLeft--;
+                }
+            }
+        }
+    }
+
+
+
+    //deprecated
+    void GetLookedAtCharacter()
+    {
+        RaycastHit hitInfo;
+        bool raycastHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out hitInfo, lookDistance);
+        Debug.DrawRay(cam.transform.position, cam.transform.forward * lookDistance, Color.white, 1.0f);
+
+        if (raycastHit)
+        {
+            print("Looking at " + hitInfo.transform.gameObject);
+            //if (hitInfo)
+        }
+
+        else
+        {
+            print("Looking at nothing");
+        }
     }
 
 
@@ -456,7 +525,7 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckIfFallen()
     {
-        if (transform.position.y < -20f)
+        if (transform.position.y < respawnY)
         {
             transform.position = respawnPosition;
         }
