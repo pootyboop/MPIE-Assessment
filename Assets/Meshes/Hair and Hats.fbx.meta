@@ -1,0 +1,346 @@
+fileFormatVersion: 2
+guid: 4f42ce4af2d61d949b9709d65e043e11
+ModelImporter:
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      74: 7946837637770477941
+    second: hair1|Character headAction
+  - first:
+      74: -6658121450977499675
+    second: hair1|Character headAction.001
+  - first:
+      74: 6571385358177600579
+    second: hair1|Character headAction.002
+  - first:
+      74: 1234566779401137357
+    second: hair1|Character headAction.003
+  - first:
+      74: -7427676040839494653
+    second: hair1|Character headAction.004
+  - first:
+      74: 3201869595649015096
+    second: hair1|Character headAction.005
+  - first:
+      74: -5650434044133268113
+    second: hair1|Character headAction.006
+  - first:
+      74: -7393150671740557963
+    second: hair1|Character headAction.007
+  - first:
+      74: 5300354627712692066
+    second: hair1|Character headAction.008
+  - first:
+      74: 6465689843700091903
+    second: hair1|Character headAction.009
+  - first:
+      74: 3085441235782856600
+    second: hair2|Character headAction
+  - first:
+      74: -3211284985487774906
+    second: hair2|Character headAction.001
+  - first:
+      74: -4705274522810355804
+    second: hair2|Character headAction.002
+  - first:
+      74: -1473369686706534596
+    second: hair2|Character headAction.003
+  - first:
+      74: 140323276526231659
+    second: hair2|Character headAction.004
+  - first:
+      74: -1095652586688642175
+    second: hair2|Character headAction.005
+  - first:
+      74: 2861956241496424580
+    second: hair2|Character headAction.006
+  - first:
+      74: 4927087594358165547
+    second: hair2|Character headAction.007
+  - first:
+      74: 2656826611394093444
+    second: hair2|Character headAction.008
+  - first:
+      74: 4239842852042451430
+    second: hair2|Character headAction.009
+  - first:
+      74: -8332730300890536468
+    second: hair3|Character headAction
+  - first:
+      74: 4253471134300183301
+    second: hair3|Character headAction.001
+  - first:
+      74: -1722615050162248750
+    second: hair3|Character headAction.002
+  - first:
+      74: 6773744117281333701
+    second: hair3|Character headAction.003
+  - first:
+      74: -7523657168360012311
+    second: hair3|Character headAction.004
+  - first:
+      74: -243119460453828931
+    second: hair3|Character headAction.005
+  - first:
+      74: -8479408448213413306
+    second: hair3|Character headAction.006
+  - first:
+      74: 4810182026962150449
+    second: hair3|Character headAction.007
+  - first:
+      74: 3951271233901032079
+    second: hair3|Character headAction.008
+  - first:
+      74: 5747325562807927455
+    second: hair3|Character headAction.009
+  - first:
+      74: 6630551053932156806
+    second: hair4|Character headAction
+  - first:
+      74: 1375459392922497663
+    second: hair4|Character headAction.001
+  - first:
+      74: 4351551907571559746
+    second: hair4|Character headAction.002
+  - first:
+      74: 6767783886143059474
+    second: hair4|Character headAction.003
+  - first:
+      74: 4972787342964275955
+    second: hair4|Character headAction.004
+  - first:
+      74: 2103774308171610397
+    second: hair4|Character headAction.005
+  - first:
+      74: 992229957613598959
+    second: hair4|Character headAction.006
+  - first:
+      74: -7641787481817563088
+    second: hair4|Character headAction.007
+  - first:
+      74: 8104514888539858563
+    second: hair4|Character headAction.008
+  - first:
+      74: 5835886170419948524
+    second: hair4|Character headAction.009
+  - first:
+      74: 2067521319334198778
+    second: hair5|Character headAction
+  - first:
+      74: 4544631936582843260
+    second: hair5|Character headAction.001
+  - first:
+      74: -8860738964403565589
+    second: hair5|Character headAction.002
+  - first:
+      74: -8396252111367576340
+    second: hair5|Character headAction.003
+  - first:
+      74: 5327440892721444352
+    second: hair5|Character headAction.004
+  - first:
+      74: -3332753364703821412
+    second: hair5|Character headAction.005
+  - first:
+      74: 4996634871943422102
+    second: hair5|Character headAction.006
+  - first:
+      74: 3122471326601265916
+    second: hair5|Character headAction.007
+  - first:
+      74: 179754177593227143
+    second: hair5|Character headAction.008
+  - first:
+      74: 313213412881927691
+    second: hair5|Character headAction.009
+  - first:
+      74: -1336633353386349432
+    second: hat1|Character headAction
+  - first:
+      74: -4253254930725052711
+    second: hat1|Character headAction.001
+  - first:
+      74: -3396492311427375451
+    second: hat1|Character headAction.002
+  - first:
+      74: 354712902811685909
+    second: hat1|Character headAction.003
+  - first:
+      74: -8617389131203651780
+    second: hat1|Character headAction.004
+  - first:
+      74: 1917161193626944507
+    second: hat1|Character headAction.005
+  - first:
+      74: -7821497513556486062
+    second: hat1|Character headAction.006
+  - first:
+      74: 7723447346517804592
+    second: hat1|Character headAction.007
+  - first:
+      74: 3253045266526880218
+    second: hat1|Character headAction.008
+  - first:
+      74: -2316903103694355177
+    second: hat1|Character headAction.009
+  - first:
+      74: -6272952860019682440
+    second: hat2|Character headAction
+  - first:
+      74: 6606065538320493799
+    second: hat2|Character headAction.001
+  - first:
+      74: 480371599472478309
+    second: hat2|Character headAction.002
+  - first:
+      74: -8825002315346623033
+    second: hat2|Character headAction.003
+  - first:
+      74: -5469974157580939492
+    second: hat2|Character headAction.004
+  - first:
+      74: -496998625483604994
+    second: hat2|Character headAction.005
+  - first:
+      74: 7044928816089660803
+    second: hat2|Character headAction.006
+  - first:
+      74: 4756230235163188356
+    second: hat2|Character headAction.007
+  - first:
+      74: -840752239218325816
+    second: hat2|Character headAction.008
+  - first:
+      74: -1767189528785792406
+    second: hat2|Character headAction.009
+  - first:
+      74: -4713532724448439410
+    second: hat3|Character headAction
+  - first:
+      74: 5425253634844215330
+    second: hat3|Character headAction.001
+  - first:
+      74: 5672398582231707686
+    second: hat3|Character headAction.002
+  - first:
+      74: 1905409467868519454
+    second: hat3|Character headAction.003
+  - first:
+      74: -1755378742613742701
+    second: hat3|Character headAction.004
+  - first:
+      74: 8505568210940082899
+    second: hat3|Character headAction.005
+  - first:
+      74: 631193171390965462
+    second: hat3|Character headAction.006
+  - first:
+      74: 7679016055251628666
+    second: hat3|Character headAction.007
+  - first:
+      74: -8541382736482851153
+    second: hat3|Character headAction.008
+  - first:
+      74: -386303173410438310
+    second: hat3|Character headAction.009
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
