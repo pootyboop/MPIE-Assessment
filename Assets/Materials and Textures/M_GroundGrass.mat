@@ -23,8 +23,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_TreeLeaves
-  m_Shader: {fileID: -6465566751694194690, guid: 02216b9663b552d4eafa959f2b1543f0, type: 3}
+  m_Name: M_GroundGrass
+  m_Shader: {fileID: -6465566751694194690, guid: a4c2603d830dd804fb61db4c123a457a, type: 3}
   m_ValidKeywords:
   - _DISABLE_SSR_TRANSPARENT
   m_InvalidKeywords:
@@ -101,7 +101,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_eaf7bde919c44f30ae829b44c8471373_Texture_1:
-        m_Texture: {fileID: 2800000, guid: a9baed6b3bd962f4c841ca9c62cecd93, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8a1fd7369e65f55419ff6656fd69b481, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
@@ -268,7 +268,7 @@ Material:
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _Secondary_Color: {r: 0.9811321, g: 0.5507298, b: 0.5507298, a: 0}
+    - _Secondary_Color: {r: 0.7830189, g: 0.5302259, b: 0.30655926, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}

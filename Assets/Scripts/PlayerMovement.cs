@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     //references
     CharacterController charController;
     public Camera cam;
+    public UIManager canvas;
     public GameObject gliderMesh;
     public GameObject gliderCloths;
     private Animator gliderAnim;
@@ -25,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     //public movement
     public bool useInput = true;    //whether or not to accept player input
+    public bool useGravity = true;  //whether or not to use gravity
     public float moveSpeed = 5.0f;
     public bool useSprint = false;  //enable/disable sprinting entirely
     public float sprintSpeedMultiplier = 1.5f;
@@ -82,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
         overlappedWaterPlanes = new List<GameObject>();
 
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
-        print("Books left: " + booksLeft);
+        canvas.SetBooksRemaining(booksLeft);
     }
 
 
@@ -100,6 +102,7 @@ public class PlayerMovement : MonoBehaviour
             UpdateCrouch();
             Move();
         }
+
 
         //check if player fell to respawnY
         CheckIfFallen();
@@ -191,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
                 if (nearCharacterScript.TryGiveBook())
                 {
                     booksLeft--;
+                    canvas.SetBooksRemaining(booksLeft);
                 }
             }
         }
@@ -383,12 +387,23 @@ public class PlayerMovement : MonoBehaviour
         //https://youtu.be/7kGCrq1cJew
         //https://forum.unity.com/threads/how-to-correctly-setup-3d-character-movement-in-unity.981939/#post-6379746
 
+        Vector3 move;
+
+        //if (useInput)
+        //{
+
         //X AND Z MOVEMENT
-        Vector3 move = GetDesiredMvmt();
+        move = GetDesiredMvmt();
 
         //UpdateGliderTilt();
 
         move = ApplySpeedModifiers(move);
+        //}
+
+        //else
+        //{
+        //move = new Vector3(0.0f, 0.0f, 0.0f);
+        //}
 
 
 
@@ -401,20 +416,16 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+        //if (useGravity)
+        //{
+
         //Y MOVEMENT
         move.y = GetJumpHeight(airCannonTimerAlpha);
 
+        //}
 
 
-        if (airCannonTimerAlpha > 0)
-        {
-            speedLinesScript.SetOpacity(airCannonTimerAlpha);
-        }
-
-        else if (speedLines.activeSelf)
-        {
-            speedLines.SetActive(false);
-        }
+        UpdateSpeedLines(airCannonTimerAlpha);
 
 
 
@@ -504,7 +515,7 @@ public class PlayerMovement : MonoBehaviour
             verticalVelocity -= gravity * Time.deltaTime;
 
 
-            if (Input.GetButtonDown("Jump") && groundedTimer > 0)
+            if (Input.GetButtonDown("Jump") && groundedTimer > 0 && useInput)
             {
                 TryCrouchStop();
 
@@ -519,6 +530,21 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return verticalVelocity;
+    }
+
+
+
+    void UpdateSpeedLines(float airCannonTimerAlpha)
+    {
+        if (airCannonTimerAlpha > 0)
+        {
+            speedLinesScript.SetOpacity(airCannonTimerAlpha);
+        }
+
+        else if (speedLines.activeSelf)
+        {
+            speedLines.SetActive(false);
+        }
     }
 
 
