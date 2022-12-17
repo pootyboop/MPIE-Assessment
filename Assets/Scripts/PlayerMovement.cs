@@ -11,27 +11,31 @@ public class PlayerMovement : MonoBehaviour
     CharacterController charController;
     public Camera cam;
     public UIManager canvas;
+    public DialogueBox dialogueGameObject;
     public GameObject gliderMesh;
     public GameObject gliderCloths;
     private Animator gliderAnim;
     public GameObject speedLines;
     private SpeedLines speedLinesScript;
     public GameObject clothCollision;   //collides with cloths (e.g. cloths on doors) since CharacterController doesn't have a referenceable capsule collider
+                                        //probably could've done this with collision channels but whatever
     private CapsuleCollider clothCapsule;
     public GameObject landingParticles;
 
     //half height of the player collision capsule
-    //cloth collision should always be halfHeight * 2 - 0.1 to prevent collision issues
+    //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
     public const float halfHeight = 1.0f;
 
     //public movement
     public bool useInput = true;    //whether or not to accept player input
     public bool useGravity = true;  //whether or not to use gravity
+    public bool glideToggle = true;     //whether glide controls are hold or toggle
+    public bool crouchToggle = false;   //whether crouch controls are hold or toggle
     public float moveSpeed = 5.0f;
-    public bool useSprint = false;  //enable/disable sprinting entirely
+    public bool useSprint = false;  //enable/disable sprinting entirely (disabled by default)
     public float sprintSpeedMultiplier = 1.5f;
     public float crouchSpeedMultiplier = 0.5f;
-    public float waterSpeedMultiplier = 0.8f;
+    public float waterSpeedMultiplier = 0.8f;   //movement speed multiplier when semi-deep in water
     public float jumpHeight = 1.0f;
     public float baseGravity = 9.81f;   //default movement gravity
     public float glideGravity = 3.0f;   //gravity when gliding
@@ -42,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     //private movement
     private bool isCrouching = false;
+    private bool justStartedCrouching = false;
     private bool tryingToStand = false;
     private bool isGliding = false;
     private bool isGrounded;
@@ -68,6 +73,9 @@ public class PlayerMovement : MonoBehaviour
     public float lookDistance = 3.0f;   //how far away the player can interact with characters from
     private int booksLeft; //how many books the player has left to deliver
 
+    //dialogue
+    public Color dialogueColor;
+
     //=============================================================================================================================================\\
 
 
@@ -85,6 +93,11 @@ public class PlayerMovement : MonoBehaviour
 
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
         canvas.SetBooksRemaining(booksLeft);
+
+        dialogueColor = new Color(0.7f, 0.3f, 0.5f);
+
+        DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
+        dialogueBox.SetContent("Finally... my life's work is complete! Time to go deliver copies to everyone! They'll be so excited! I can't wait to see the looks on their faces!", dialogueColor);
     }
 
 
@@ -207,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit hitInfo;
         bool raycastHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out hitInfo, lookDistance);
-        Debug.DrawRay(cam.transform.position, cam.transform.forward * lookDistance, Color.white, 1.0f);
+        //Debug.DrawRay(cam.transform.position, cam.transform.forward * lookDistance, Color.white, 1.0f);
 
         if (raycastHit)
         {
@@ -270,25 +283,21 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
-            //toggle button
             if (!isGliding)
             {
                 TryGlideStart();
             }
 
-            else
+            else if (glideToggle)
             {
                 TryGlideStop();
             }
         }
 
-        //hold button
-        /*
-        else if (Input.GetButtonUp("Jump"))
+        else if (Input.GetButtonUp("Jump") && !glideToggle)
         {
             TryGlideStop();
         }
-        */
     }
 
 
@@ -297,10 +306,20 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isGliding && groundedTimer <= 0)
         {
-            gravity = glideGravity;
             isGliding = true;
-            gliderCloths.SetActive(true);
+            gravity = glideGravity;
 
+            //glide-y jumps are fun so this is disabled
+            /*
+            //prevent glide-y jumps when gliding while jumping upward (though they are fun)
+            if (verticalVelocity > 0)
+            {
+                verticalVelocity = 0;
+            }
+            */
+
+            //visual
+            gliderCloths.SetActive(true);
             gliderAnim.SetBool("isGliding", true);
         }
     }
@@ -325,11 +344,20 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Crouch"))
         {
-            tryingToStand = false;
-            TryCrouchStart();
+            if (!crouchToggle || (crouchToggle && !isCrouching))
+            {
+                tryingToStand = false;
+                TryCrouchStart();
+            }
+
+            else
+            {
+                tryingToStand = true;
+                TryCrouchStop();
+            }
         }
 
-        else if (Input.GetButtonUp("Crouch") || tryingToStand)
+        else if ((Input.GetButtonUp("Crouch") && !crouchToggle) || tryingToStand)
         {
             tryingToStand = true;
             TryCrouchStop();
@@ -343,6 +371,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isCrouching && isGrounded && !isInWater)
         {
             isCrouching = true;
+            justStartedCrouching = true;
             charController.height = halfHeight;
             clothCapsule.height = halfHeight - 0.1f;
             transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
@@ -497,12 +526,24 @@ public class PlayerMovement : MonoBehaviour
 
     float GetJumpHeight(float airCannonTimerAlpha)
     {
+        //immediately snap to ground when crouching
+        if (justStartedCrouching == true)
+        {
+            justStartedCrouching = false;
+            verticalVelocity = -100.0f;
+        }
+
+
+
         //prevent the player from immediately falling supa dupa fast when air cannon boost ends
-        if (airCannonTimerAlpha > airCannonVerticalVelocityFalloffTime)
+        else if (airCannonTimerAlpha > airCannonVerticalVelocityFalloffTime)
         {
             verticalVelocity = 0.0f;
         }
 
+
+
+        //regular Y movement
         else
         {
 
@@ -554,6 +595,10 @@ public class PlayerMovement : MonoBehaviour
         if (transform.position.y < respawnY)
         {
             transform.position = respawnPosition;
+
+            //dialogue
+            DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
+            dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books on time!", dialogueColor);
         }
     }
 }

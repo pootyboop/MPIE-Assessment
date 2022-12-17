@@ -23,7 +23,7 @@ public class Character : MonoBehaviour
     public Canvas worldspaceCanvas;
     public DialogueBox characterDialogueGameObject;
     public CharacterUI characterUIGameObject;
-    private CharacterUI charUI;
+    public CharacterUI charUI;
 
 
 
@@ -96,9 +96,13 @@ public class Character : MonoBehaviour
         bookMesh.SetActive(true);
         Instantiate(bookParticles, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
 
+        //turn of charUI when dialogue is open
         charUI.GaveBook();
+        charUI.gameObject.SetActive(false);
+
+        //create dialogue
         DialogueBox dialogueBox = Instantiate(characterDialogueGameObject, UICanvas.transform);
         //dialogueBox.transform.SetParent(UICanvas.transform);
-        dialogueBox.SetContent(dialogue, new Color(0.0f, 0.2f, 0.6f));
+        dialogueBox.SetContent(dialogue, new Color(0.0f, 0.0f, 0.0f), this);
     }
 }

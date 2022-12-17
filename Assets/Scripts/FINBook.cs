@@ -9,6 +9,7 @@ public class FINBook : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        animator.SetTrigger("openBook");
     }
 
 
@@ -17,6 +18,7 @@ public class FINBook : MonoBehaviour
     {
         //print(transform.position);
 
+        /*
         if (Input.GetKeyDown("t"))
         {
             animator.SetTrigger("closeBook");
@@ -26,5 +28,6 @@ public class FINBook : MonoBehaviour
         {
             animator.SetTrigger("openBook");
         }
+        */
     }
 }
