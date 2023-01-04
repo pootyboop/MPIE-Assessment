@@ -25,12 +25,18 @@ public class Character : MonoBehaviour
     public CharacterUI characterUIGameObject;
     public CharacterUI charUI;
 
+    private AudioSettings audioSettings;
+    public AudioSource getBookSound;
+    public AudioSource voiceSound;
+
 
 
     private void Start()
     {
         animator = GetComponent<Animator>();
         animator.SetInteger("Animation ID", (int)anim);
+
+        audioSettings = FindObjectOfType<AudioSettings>();
     }
 
 
@@ -93,8 +99,15 @@ public class Character : MonoBehaviour
 
     private void GiveBook()
     {
+        //activate book mesh and spawn particles
         bookMesh.SetActive(true);
         Instantiate(bookParticles, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+
+        //play audio
+        getBookSound.volume = audioSettings.sfxVolume;
+        voiceSound.volume = audioSettings.sfxVolume;
+        getBookSound.Play();
+        voiceSound.Play();
 
         //turn of charUI when dialogue is open
         charUI.GaveBook();

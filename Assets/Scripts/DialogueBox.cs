@@ -9,6 +9,7 @@ public class DialogueBox : MonoBehaviour
     private PlayerMovement player;
     private CameraController cam;
     private Character speakingCharacter;
+    private AudioSettings audioSettings;
 
     private void Start()
     {
@@ -17,6 +18,13 @@ public class DialogueBox : MonoBehaviour
 
         cam = Camera.main.GetComponent<CameraController>();
         cam.useMouseInput = false;
+
+        audioSettings = FindObjectOfType<AudioSettings>();
+
+        audioSettings.SetTrackFade(0, true);
+        audioSettings.SetTrackFade(1, false);
+        audioSettings.SetTrackFade(2, false);
+        audioSettings.SetTrackFade(3, true);
     }
 
 
@@ -36,6 +44,12 @@ public class DialogueBox : MonoBehaviour
                     speakingCharacter.charUI.gameObject.SetActive(true);
                 }
             }
+
+
+            audioSettings.SetTrackFade(0, false);
+            audioSettings.SetTrackFade(1, true);
+            audioSettings.SetTrackFade(2, true);
+            audioSettings.SetTrackFade(3, true);
 
             Object.Destroy(gameObject);
         }

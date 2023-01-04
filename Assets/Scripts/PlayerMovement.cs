@@ -21,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
                                         //probably could've done this with collision channels but whatever
     private CapsuleCollider clothCapsule;
     public GameObject landingParticles;
+    private AudioSettings audioSettings;
+    public FadeSFX windSound;
 
     //half height of the player collision capsule
     //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
@@ -88,6 +90,8 @@ public class PlayerMovement : MonoBehaviour
         speedLinesScript = speedLines.GetComponent<SpeedLines>();
         clothCapsule = clothCollision.GetComponent<CapsuleCollider>();
         gravity = baseGravity;
+
+        audioSettings = FindObjectOfType<AudioSettings>();
 
         overlappedWaterPlanes = new List<GameObject>();
 
@@ -254,6 +258,10 @@ public class PlayerMovement : MonoBehaviour
             groundedTimer = 0.2f;
 
             TryGlideStop();
+
+            audioSettings.SetTrackFade(0, false);
+            audioSettings.SetTrackFade(2, true);
+            audioSettings.SetTrackFade(3, true);
         }
 
         /*else if (isCrouching)
@@ -309,6 +317,11 @@ public class PlayerMovement : MonoBehaviour
             isGliding = true;
             gravity = glideGravity;
 
+            audioSettings.SetTrackFade(0, true);
+            audioSettings.SetTrackFade(2, false);
+            audioSettings.SetTrackFade(3, false);
+            windSound.SetState(FadeSFX.fadeState.FADEIN);
+
             //glide-y jumps are fun so this is disabled
             /*
             //prevent glide-y jumps when gliding while jumping upward (though they are fun)
@@ -332,6 +345,7 @@ public class PlayerMovement : MonoBehaviour
         {
             gravity = baseGravity;
             isGliding = false;
+            windSound.SetState(FadeSFX.fadeState.FADEOUT);
 
             gliderAnim.SetBool("isGliding", false);
             gliderCloths.SetActive(false);

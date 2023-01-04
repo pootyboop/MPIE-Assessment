@@ -107,14 +107,14 @@ public class Settings : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
-        audioSettings.musicVolume = volume;
+        audioSettings.SetMusicVolume(volume);
     }
 
 
 
     public void SetSfxVolume(float volume)
     {
-        audioSettings.sfxVolume = volume;
+        audioSettings.SetSFXVolume(volume);
     }
 
 
