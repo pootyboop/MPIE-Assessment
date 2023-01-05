@@ -154,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
                 overlappedAirCannon = other.gameObject;
                 airCannonMove = AirCannonBoost(overlappedAirCannon);
 
+                MidairMusic();
                 boostSound.audioSource.Play();
 
                 speedLines.SetActive(true);
@@ -250,21 +251,21 @@ public class PlayerMovement : MonoBehaviour
             respawnPosition = transform.position;
         }
 
-        else if (charController.isGrounded && !isGrounded && previousVerticalVelocity <= -glideMaxVerticalVelocity)
+        else if (charController.isGrounded && !isGrounded)
         {
-            LandingParticles();
+            TryGlideStop();
+            GroundedMusic();
+
+            if (previousVerticalVelocity <= -glideMaxVerticalVelocity)
+            {
+                LandingParticles();
+            }
         }
 
         isGrounded = charController.isGrounded;
         if (isGrounded)
         {
             groundedTimer = 0.2f;
-
-            TryGlideStop();
-
-            audioSettings.SetTrackFade(0, false);
-            audioSettings.SetTrackFade(2, true);
-            audioSettings.SetTrackFade(3, true);
         }
 
         /*else if (isCrouching)
@@ -320,9 +321,7 @@ public class PlayerMovement : MonoBehaviour
             isGliding = true;
             gravity = glideGravity;
 
-            audioSettings.SetTrackFade(0, true);
-            audioSettings.SetTrackFade(2, false);
-            audioSettings.SetTrackFade(3, false);
+            MidairMusic();
             windSound.SetState(FadeSFX.fadeState.FADEIN);
             glideStartSound.audioSource.Play();
 
@@ -619,5 +618,24 @@ public class PlayerMovement : MonoBehaviour
             DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
             dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books on time!", dialogueColor);
         }
+    }
+
+
+
+    private void MidairMusic()
+    {
+        audioSettings.SetTrackFade(0, true);
+        audioSettings.SetTrackFade(1, true);
+        audioSettings.SetTrackFade(2, false);
+        audioSettings.SetTrackFade(3, false);
+    }
+
+
+
+    private void GroundedMusic()
+    {
+        audioSettings.SetTrackFade(0, false);
+        audioSettings.SetTrackFade(2, true);
+        audioSettings.SetTrackFade(3, true);
     }
 }

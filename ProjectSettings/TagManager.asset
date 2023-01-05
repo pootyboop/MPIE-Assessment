@@ -8,6 +8,7 @@ TagManager:
   - Water
   - Air Cannon
   - Character
+  - Water Audio Manager
   layers:
   - Default
   - TransparentFX

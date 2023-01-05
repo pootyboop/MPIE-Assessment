@@ -7,6 +7,8 @@ public class WaterAudioManager : MonoBehaviour
     private List<GameObject> overlappedWaterPlanes;
     public FadeSFX waterSound;
 
+    //public GameObject player;
+
     private void Start()
     {
         overlappedWaterPlanes = new List<GameObject>();
@@ -16,17 +18,32 @@ public class WaterAudioManager : MonoBehaviour
 
     private void Update()
     {
-        
+        //gameObject.transform.position = player.transform.position;
+    }
+
+
+
+    public void StartOverlapWater(GameObject other)
+    {
+        print("SUCCESS!!!!!!!!!!!");
+
+        if (overlappedWaterPlanes.Count == 0)
+        {
+            waterSound.SetState(FadeSFX.fadeState.FADEIN);
+        }
+
+        overlappedWaterPlanes.Add(other.gameObject);
     }
 
 
 
     private void OnTriggerEnter(Collider other)
     {
+        print("overlapped " + other);
 
-        if (other.gameObject.CompareTag("Water"))
+        if (other.CompareTag("Water"))
         {
-            print("yup");
+            print("SUCCESS!!!!!!!!!!!");
 
             if (overlappedWaterPlanes.Count == 0)
             {
@@ -41,7 +58,7 @@ public class WaterAudioManager : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Water"))
+        if (other.CompareTag("Water"))
         {
             overlappedWaterPlanes.Remove(other.gameObject);
             if (overlappedWaterPlanes.Count == 0)
