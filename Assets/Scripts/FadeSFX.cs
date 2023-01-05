@@ -12,7 +12,7 @@ public class FadeSFX : MonoBehaviour
 
     private AudioSettings audioSettings;
 
-    private AudioSource audioSource;
+    public AudioSource audioSource;
     private fadeState state = fadeState.SILENT;
     public bool isMusic = false;
     public bool isWorldNoise = false;
@@ -21,8 +21,8 @@ public class FadeSFX : MonoBehaviour
 
     private void Start()
     {
-        audioSettings = FindObjectOfType<AudioSettings>();
         audioSource = GetComponent<AudioSource>();
+        audioSettings = FindObjectOfType<AudioSettings>();
 
         if (isMusic)
         {
@@ -94,6 +94,13 @@ public class FadeSFX : MonoBehaviour
     public void SetMaxVolume(float volume)
     {
         maxVolume = volume;
+
+        //i think this function gets called from AudioSettings before Start()
+        //so this is a workaround to prevent unassigned references
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
 
         if (audioSource.volume > maxVolume)
         {

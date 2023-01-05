@@ -23,6 +23,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject landingParticles;
     private AudioSettings audioSettings;
     public FadeSFX windSound;
+    public FadeSFX boostSound;
+    public FadeSFX glideStartSound;
+    public FadeSFX glideStopSound;
 
     //half height of the player collision capsule
     //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
@@ -98,8 +101,6 @@ public class PlayerMovement : MonoBehaviour
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
         canvas.SetBooksRemaining(booksLeft);
 
-        dialogueColor = new Color(0.7f, 0.3f, 0.5f);
-
         DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
         dialogueBox.SetContent("Finally... my life's work is complete! Time to go deliver copies to everyone! They'll be so excited! I can't wait to see the looks on their faces!", dialogueColor);
     }
@@ -152,6 +153,8 @@ public class PlayerMovement : MonoBehaviour
                 airCannonTimer = airCannonMaxTime;
                 overlappedAirCannon = other.gameObject;
                 airCannonMove = AirCannonBoost(overlappedAirCannon);
+
+                boostSound.audioSource.Play();
 
                 speedLines.SetActive(true);
                 speedLinesScript.SetOpacity(1.0f);
@@ -321,6 +324,7 @@ public class PlayerMovement : MonoBehaviour
             audioSettings.SetTrackFade(2, false);
             audioSettings.SetTrackFade(3, false);
             windSound.SetState(FadeSFX.fadeState.FADEIN);
+            glideStartSound.audioSource.Play();
 
             //glide-y jumps are fun so this is disabled
             /*
@@ -346,6 +350,7 @@ public class PlayerMovement : MonoBehaviour
             gravity = baseGravity;
             isGliding = false;
             windSound.SetState(FadeSFX.fadeState.FADEOUT);
+            glideStopSound.audioSource.Play();
 
             gliderAnim.SetBool("isGliding", false);
             gliderCloths.SetActive(false);

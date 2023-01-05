@@ -16,6 +16,9 @@ public class Settings : MonoBehaviour
     public TMPro.TextMeshProUGUI glideToggle;
     public TMPro.TextMeshProUGUI crouchToggle;
 
+    public FadeSFX openBookSound;
+    public FadeSFX closeBookSound;
+
     private bool isOpen = false;
     private bool previousUseInput;
 
@@ -62,6 +65,8 @@ public class Settings : MonoBehaviour
 
         booksRemainingIcon.SetActive(false);
 
+        openBookSound.audioSource.Play();
+
         animator.SetTrigger("openBook");
     }
 
@@ -77,6 +82,8 @@ public class Settings : MonoBehaviour
         Cursor.visible = false;
 
         booksRemainingIcon.SetActive(true);
+
+        closeBookSound.audioSource.Play();
 
         animator.SetTrigger("closeBook");
     }
