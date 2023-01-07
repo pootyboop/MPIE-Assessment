@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AudioSettings : MonoBehaviour
 {
-    public float musicVolume = 0.2f;
+    public float musicVolume = 0.15f;
     public float sfxVolume = 0.7f;
 
     public float musicFadeSpeed = 0.5f;

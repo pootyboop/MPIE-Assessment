@@ -9,6 +9,7 @@ TagManager:
   - Air Cannon
   - Character
   - Water Audio Manager
+  - Island Marker
   layers:
   - Default
   - TransparentFX

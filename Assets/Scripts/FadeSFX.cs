@@ -16,6 +16,7 @@ public class FadeSFX : MonoBehaviour
     private fadeState state = fadeState.SILENT;
     public bool isMusic = false;
     public bool isWorldNoise = false;
+    public float volumeMultiplier = 1.0f;
     private float maxVolume;
     public float fadeSpeed = 0.5f;  //how fast to fade in/out. if isMusic, this is overwritten by AudioSettings´ music volume
 
@@ -26,13 +27,13 @@ public class FadeSFX : MonoBehaviour
 
         if (isMusic)
         {
-            maxVolume = audioSettings.musicVolume;
+            maxVolume = audioSettings.musicVolume * volumeMultiplier;
             fadeSpeed = audioSettings.musicFadeSpeed;
         }
 
         else
         {
-            maxVolume = audioSettings.sfxVolume;
+            maxVolume = audioSettings.sfxVolume * volumeMultiplier;
         }
 
         if (isWorldNoise)
@@ -65,10 +66,10 @@ public class FadeSFX : MonoBehaviour
 
         //this is messy, i know
         //i just can´t think of a better way to change all sfx´s volumes using this script
-        //FindObjectsOfType() doesn´t always work since i may instantiate more sfx at runtime
-        if (state != fadeState.SILENT && !isMusic && audioSource.volume > audioSettings.sfxVolume)
+        //FindObjectsOfType() doesn´t always work since i may instantiate more sfx at runtime and i don´t wanna run it on Update()
+        if (!isMusic)
         {
-            audioSource.volume = audioSettings.sfxVolume;
+            SetMaxVolume(audioSettings.sfxVolume);
         }
     }
 
@@ -85,6 +86,14 @@ public class FadeSFX : MonoBehaviour
 
             case fadeState.PLAYING:
                 audioSource.volume = maxVolume;
+                /*
+
+            case fadeState.FADEIN:
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.Play();
+                }
+                */
                 break;
         }
     }
@@ -93,7 +102,7 @@ public class FadeSFX : MonoBehaviour
 
     public void SetMaxVolume(float volume)
     {
-        maxVolume = volume;
+        maxVolume = volume * volumeMultiplier;
 
         //i think this function gets called from AudioSettings before Start()
         //so this is a workaround to prevent unassigned references
@@ -102,7 +111,8 @@ public class FadeSFX : MonoBehaviour
             audioSource = GetComponent<AudioSource>();
         }
 
-        if (audioSource.volume > maxVolume)
+        //if the volume´s too loud or if a currently playing sound´s volume might be lower than it should be
+        if ((audioSource.volume > maxVolume) || (state == fadeState.FADEIN || state == fadeState.PLAYING || !audioSource.isPlaying))
         {
             audioSource.volume = maxVolume;
         }

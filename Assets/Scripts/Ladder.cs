@@ -7,7 +7,7 @@ public class Ladder : MonoBehaviour
     //script adapted from:
     //https://youtu.be/138WGOIgUeI
 
-    private PlayerMovement mvmtScript;
+    public PlayerMovement mvmtScript;
     public float climbSpeed = 0.5f;
 
     private bool isClimbed = false;
@@ -16,7 +16,7 @@ public class Ladder : MonoBehaviour
 
     void Start()
     {
-        mvmtScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        //mvmtScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
 

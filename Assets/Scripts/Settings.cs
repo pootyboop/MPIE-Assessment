@@ -22,6 +22,7 @@ public class Settings : MonoBehaviour
     private bool isOpen = false;
     private bool previousUseInput;
 
+    private CharacterUI charUI;
 
 
     void Start()
@@ -37,7 +38,7 @@ public class Settings : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Cancel"))
+        if (Input.GetButtonDown("Cancel") && FindObjectOfType<DialogueBox>() == null)
         {
             if (!isOpen)
             {
@@ -66,8 +67,14 @@ public class Settings : MonoBehaviour
         booksRemainingIcon.SetActive(false);
 
         openBookSound.audioSource.Play();
-
         animator.SetTrigger("openBook");
+
+        //hide charUI if one´s nearby
+        charUI = FindObjectOfType<CharacterUI>();
+        if (charUI != null)
+        {
+            charUI.gameObject.SetActive(false);
+        }
     }
 
 
@@ -84,8 +91,14 @@ public class Settings : MonoBehaviour
         booksRemainingIcon.SetActive(true);
 
         closeBookSound.audioSource.Play();
-
         animator.SetTrigger("closeBook");
+
+        //unhide charUI if there was one
+        if (charUI != null)
+        {
+            charUI.gameObject.SetActive(true);
+            charUI = null;
+        }
     }
 
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public Camera cam;
     public UIManager canvas;
     public DialogueBox dialogueGameObject;
+    public StartMenu startMenu;
     public GameObject gliderMesh;
     public GameObject gliderCloths;
     private Animator gliderAnim;
@@ -22,14 +24,18 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider clothCapsule;
     public GameObject landingParticles;
     private AudioSettings audioSettings;
+    public FootstepManager footstepManager;
     public FadeSFX windSound;
     public FadeSFX boostSound;
     public FadeSFX glideStartSound;
     public FadeSFX glideStopSound;
+    public IslandMarkerUI islandMarkerUIPrefab;
+    private IslandMarker overlappedIslandMarker;
+    private string lastIslandMarker = "Cozy Isle";
 
     //half height of the player collision capsule
     //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
-    public const float halfHeight = 1.0f;
+    public float halfHeight = 1.0f;
 
     //public movement
     public bool useInput = true;    //whether or not to accept player input
@@ -50,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     public float airCannonVerticalVelocityFalloffTime = 0.4f;   //how much vertical velocity returns at the end of a air cannon blast
 
     //private movement
+    private bool isMoving = false;
     private bool isCrouching = false;
     private bool justStartedCrouching = false;
     private bool tryingToStand = false;
@@ -65,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 respawnPosition;    //the player's last grounded position
 
     //water
-    private bool isInWater;
+    public bool isInWater;
     private List<GameObject> overlappedWaterPlanes; //all water planes currently overlapped by the player - used to ensure isInWater stays true when moving across water planes
 
     //air cannon
@@ -80,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
     //dialogue
     public Color dialogueColor;
+    private bool openedFinalDialogue = false;
 
     //=============================================================================================================================================\\
 
@@ -98,11 +106,13 @@ public class PlayerMovement : MonoBehaviour
 
         overlappedWaterPlanes = new List<GameObject>();
 
+        GiveRefToObjects();
+
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
         canvas.SetBooksRemaining(booksLeft);
 
         DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
-        dialogueBox.SetContent("Finally... my life's work is complete! Time to go deliver copies to everyone! They'll be so excited! I can't wait to see the looks on their faces!", dialogueColor);
+        dialogueBox.SetContent("Finally... my novel is complete! Time to go deliver copies to everyone! They'll be so excited! I can't wait to see the looks on their faces!", dialogueColor);
     }
 
 
@@ -119,6 +129,12 @@ public class PlayerMovement : MonoBehaviour
             UpdateGliding();
             UpdateCrouch();
             Move();
+        }
+
+        else if (isMoving)
+        {
+            isMoving = false;
+            footstepManager.SetMovingGrounded(false);
         }
 
 
@@ -165,6 +181,10 @@ public class PlayerMovement : MonoBehaviour
                 nearCharacter = other.gameObject;
                 nearCharacterScript = nearCharacter.GetComponent<Character>();
                 break;
+
+            case "Island Marker":
+                overlappedIslandMarker = other.gameObject.GetComponent<IslandMarker>();
+                break;
         }
     }
 
@@ -190,6 +210,10 @@ public class PlayerMovement : MonoBehaviour
             case "Character":
                 nearCharacter = null;
                 nearCharacterScript = null;
+                break;
+
+            case "Island Marker":
+                overlappedIslandMarker = null;
                 break;
         }
     }
@@ -223,6 +247,17 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    private void GiveRefToObjects()
+    {
+        Ladder[] ladders = FindObjectsOfType<Ladder>();
+        for (int i = 0; i < ladders.Length; i++)
+        {
+            ladders[i].mvmtScript = this;
+        }
+    }
+
+
+
     //deprecated
     void GetLookedAtCharacter()
     {
@@ -249,16 +284,23 @@ public class PlayerMovement : MonoBehaviour
         if (!charController.isGrounded && isGrounded)
         {
             respawnPosition = transform.position;
+            footstepManager.SetMovingGrounded(false);
         }
 
         else if (charController.isGrounded && !isGrounded)
         {
             TryGlideStop();
             GroundedMusic();
+            TryIslandMarker();
+
+            if (isMoving) {
+                footstepManager.SetMovingGrounded(true);
+            }
 
             if (previousVerticalVelocity <= -glideMaxVerticalVelocity)
             {
                 LandingParticles();
+                footstepManager.Step();
             }
         }
 
@@ -282,11 +324,25 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    void LandingParticles()
+    public void LandingParticles()
     {
         Vector3 landingParticlesSpawn = transform.position;
         landingParticlesSpawn.y -= halfHeight;
         Instantiate(landingParticles, landingParticlesSpawn, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+    }
+
+
+
+    private void TryIslandMarker()
+    {
+        if (overlappedIslandMarker != null && lastIslandMarker != overlappedIslandMarker.text)
+        {
+            IslandMarkerUI islandMarkerUI = Instantiate(islandMarkerUIPrefab);
+            islandMarkerUI.transform.SetParent(canvas.transform);
+            islandMarkerUI.SetText(overlappedIslandMarker.text);
+
+            lastIslandMarker = overlappedIslandMarker.text;
+        }
     }
 
 
@@ -393,6 +449,8 @@ public class PlayerMovement : MonoBehaviour
             charController.height = halfHeight;
             clothCapsule.height = halfHeight - 0.1f;
             transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
+
+            footstepManager.SetCrouched(true);
         }
     }
 
@@ -409,6 +467,8 @@ public class PlayerMovement : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
             charController.height = halfHeight * 2;
             clothCapsule.height = halfHeight * 2 - 0.1f;
+
+            footstepManager.SetCrouched(false);
         }
     }
 
@@ -488,15 +548,42 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
-        forward.y = 0;
-        right.y = 0;
+        forward.y = 0.0f;
+        right.y = 0.0f;
         forward = forward.normalized;
         right = right.normalized;
 
-        Vector3 forwardRelativeInput = forward * Input.GetAxis("Vertical");
-        Vector3 rightRelativeInput = right * Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
+
+        UpdateIsMoving(horizontal, vertical);
+
+        Vector3 forwardRelativeInput = forward * vertical;
+        Vector3 rightRelativeInput = right * horizontal;
 
         return (forwardRelativeInput + rightRelativeInput) * moveSpeed;
+    }
+
+
+
+    void UpdateIsMoving (float horizontal, float vertical)
+    {
+        if (!isMoving && (vertical != 0.0f || horizontal != 0.0f))
+        {
+            isMoving = true;
+
+            if (isGrounded)
+            {
+                footstepManager.SetMovingGrounded(true);
+            }
+        }
+
+        else if (isMoving && vertical == 0.0f && horizontal == 0.0f)
+        {
+
+            isMoving = false;
+            footstepManager.SetMovingGrounded(false);
+        }
     }
 
 
@@ -616,7 +703,31 @@ public class PlayerMovement : MonoBehaviour
 
             //dialogue
             DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
-            dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books on time!", dialogueColor);
+            dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books in 5 to 6 minutes!", dialogueColor);
+        }
+    }
+
+
+
+    public void OnDialogueClosed()
+    {
+        if (booksLeft == 0)
+        {
+            if (!openedFinalDialogue)
+            {
+                DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
+                dialogueBox.SetContent("They´re all delivered. I can´t wait to read the reviews! Well then, I suppose it´s time to start a new book!", dialogueColor);
+                openedFinalDialogue = true;
+            }
+
+            else
+            {
+                //dialogueBox.SetContent("Well then, nothing left to do except start a new book!", dialogueColor);
+                startMenu.gameObject.SetActive(true);
+                startMenu.EndMenu();
+            }
+
+
         }
     }
 

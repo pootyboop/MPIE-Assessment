@@ -21,9 +21,9 @@ public class DialogueBox : MonoBehaviour
 
         audioSettings = FindObjectOfType<AudioSettings>();
 
-        audioSettings.SetTrackFade(0, true);
+        audioSettings.SetTrackFade(0, false);
         audioSettings.SetTrackFade(1, false);
-        audioSettings.SetTrackFade(2, false);
+        audioSettings.SetTrackFade(2, true);
         audioSettings.SetTrackFade(3, true);
     }
 
@@ -50,6 +50,8 @@ public class DialogueBox : MonoBehaviour
             audioSettings.SetTrackFade(1, true);
             audioSettings.SetTrackFade(2, true);
             audioSettings.SetTrackFade(3, true);
+            
+            player.OnDialogueClosed();
 
             Object.Destroy(gameObject);
         }

@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1524159503751421936
 Transform:
@@ -4855,7 +4855,7 @@ GameObject:
   m_TagString: Air Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1345555406369331390
 Transform:
@@ -4940,7 +4940,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6631845207427270105
 Transform:
@@ -4988,32 +4988,32 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.2
+      time: 0.48697966
       value: 1
-      inSlope: -5.0019917
-      outSlope: -5.0019917
+      inSlope: -0.030725796
+      outSlope: -0.030725796
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 1
     - serializedVersion: 3
-      time: 0.38521424
-      value: 0.46070862
-      inSlope: -1.2504979
-      outSlope: -1.2504979
+      time: 0.67514646
+      value: 0.39959717
+      inSlope: -1.5492799
+      outSlope: -1.5492799
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.45078474
     - serializedVersion: 3
-      time: 0.6994141
-      value: 0.14523315
-      inSlope: -0.6761477
-      outSlope: -0.6761477
+      time: 0.850293
+      value: 0.123413086
+      inSlope: -0.9317403
+      outSlope: -0.9317403
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.4783362
+      outWeight: 0.59770703
     - serializedVersion: 3
       time: 1
       value: 0
@@ -5086,6 +5086,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   isMusic: 0
   isWorldNoise: 1
+  volumeMultiplier: 0.5
   fadeSpeed: 0.5
 --- !u!1001 &1524159503019522473
 PrefabInstance:
@@ -5161,6 +5162,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 99d85e8d1599f1c44b4de96d02e887d1, type: 3}
       propertyPath: m_TagString
       value: Air Cannon
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 99d85e8d1599f1c44b4de96d02e887d1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99d85e8d1599f1c44b4de96d02e887d1, type: 3}

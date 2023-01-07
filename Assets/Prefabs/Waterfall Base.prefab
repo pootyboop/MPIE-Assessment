@@ -4888,32 +4888,32 @@ AudioSource:
     - serializedVersion: 3
       time: 0.1
       value: 1
-      inSlope: -10.0039835
-      outSlope: -10.0039835
+      inSlope: -1.8260663
+      outSlope: -1.8260663
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.55519485
     - serializedVersion: 3
-      time: 0.2
-      value: 0.5
-      inSlope: -2.5009959
-      outSlope: -2.5009959
+      time: 0.28579253
+      value: 0.5916672
+      inSlope: -1.9521054
+      outSlope: -1.9521054
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.38014278
     - serializedVersion: 3
-      time: 0.4
-      value: 0.20198059
-      inSlope: -0.91865087
-      outSlope: -0.91865087
+      time: 0.465094
+      value: 0.27618408
+      inSlope: -1.8099421
+      outSlope: -1.8099421
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.79805416
       outWeight: 0.5903168
     - serializedVersion: 3
-      time: 0.61951905
+      time: 0.6993988
       value: 0.06825256
       inSlope: -0.3898757
       outSlope: -0.3898757
@@ -4990,6 +4990,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20481928e332d0f4da22360939b4884c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
   isMusic: 0
   isWorldNoise: 1
+  volumeMultiplier: 0.6
   fadeSpeed: 0.5
