@@ -151,7 +151,7 @@ public class FootstepManager : MonoBehaviour
 
                 Material sharedMaterial = renderer.sharedMaterial;
 
-                print(sharedMaterial.name);
+                //print(sharedMaterial.name);
 
                 switch (sharedMaterial.name)
                 {
