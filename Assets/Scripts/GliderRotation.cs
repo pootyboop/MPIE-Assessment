@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//absolute failure of a script. leave this place.
 public class GliderRotation : MonoBehaviour
 {
     public Transform obj;

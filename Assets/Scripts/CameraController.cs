@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
+        //hide mouse
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }

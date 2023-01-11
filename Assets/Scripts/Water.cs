@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//just plays water noises around the player to make the audio more realistic
 public class Water : MonoBehaviour
 {
     //private WaterAudioManager waterAudioManager;

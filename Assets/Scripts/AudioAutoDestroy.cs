@@ -5,12 +5,17 @@ using UnityEngine;
 public class AudioAutoDestroy : MonoBehaviour
 {
     private AudioSource audioSource;
-    void Start()
+
+
+
+    private void Start()
     {
-        audioSource= GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
-    void Update()
+
+
+    private void Update()
     {
         if (!audioSource.isPlaying)
         {

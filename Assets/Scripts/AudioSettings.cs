@@ -7,14 +7,16 @@ public class AudioSettings : MonoBehaviour
     public float musicVolume = 0.15f;
     public float sfxVolume = 0.7f;
 
-    public float musicFadeSpeed = 0.5f;
+    public float musicFadeSpeed = 0.5f; //time music takes to fade in/out
 
     //the 4 different tracks i collapsed the music into
-    //1 - melody
-    //2 - trill chords
-    //3 - low chords & bass
-    //4 - drums
+    //0 - melody
+    //1 - trill chords
+    //2 - low chords & bass
+    //3 - drums
     public FadeSFX[] music;
+
+
 
     private void Start()
     {
@@ -25,13 +27,6 @@ public class AudioSettings : MonoBehaviour
         SetTrackFade(1, true);
         SetTrackFade(2, true);
         //SetTrackFade(3, true);
-    }
-
-
-
-    private void Update()
-    {
-
     }
 
 

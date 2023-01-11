@@ -8,11 +8,12 @@ public class DialogueBox : MonoBehaviour
     public TMPro.TextMeshProUGUI charNameTextBox;
     private PlayerMovement player;
     private CameraController cam;
-    private Character speakingCharacter;
+    private Character speakingCharacter;    //only used if this is a character dialogue
     private AudioSettings audioSettings;
 
     private void Start()
     {
+        //don't want player to move or look around while dialogue is open
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
         player.useInput = false;
 
@@ -31,8 +32,10 @@ public class DialogueBox : MonoBehaviour
 
     private void Update()
     {
+        //jump button also manages dialogue
         if (Input.GetButtonDown("Jump"))
         {
+            //give player back input
             player.useInput = true;
             cam.useMouseInput = true;
 
@@ -45,7 +48,7 @@ public class DialogueBox : MonoBehaviour
                 }
             }
 
-
+            //grounded music
             audioSettings.SetTrackFade(0, false);
             audioSettings.SetTrackFade(1, true);
             audioSettings.SetTrackFade(2, true);
@@ -68,12 +71,13 @@ public class DialogueBox : MonoBehaviour
 
 
 
-    //character dialogue
+    //character dialogue override
     public void SetContent(string text, Color color, Character character)
     {
         textBox.text = text;
         textBox.color = color;
 
+        //add the character's name above the dialogue box
         charNameTextBox.gameObject.SetActive(true);
         speakingCharacter = character;
         charNameTextBox.text = speakingCharacter.characterName;

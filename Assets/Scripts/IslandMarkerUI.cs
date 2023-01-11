@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+//manages fading the island titles in and out
 public class IslandMarkerUI : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI text;
@@ -27,6 +28,8 @@ public class IslandMarkerUI : MonoBehaviour
 
         float alpha = 0.0f; //just assigned to make visual studio happy
 
+
+
         if (!fadingOut)
         {
             //fading in
@@ -48,6 +51,8 @@ public class IslandMarkerUI : MonoBehaviour
             }
         }
 
+
+
         if (fadingOut)
         {
             //fading out
@@ -65,6 +70,9 @@ public class IslandMarkerUI : MonoBehaviour
             }
         }
 
+
+
+        //code graveyard
         /*
         //fading out
         else if (timer < fadeInOutTime * 2.0f + stayTime + 0.1f)
@@ -89,6 +97,7 @@ public class IslandMarkerUI : MonoBehaviour
     public void SetText(string newText)
     {
         text.text = newText;
+        //reset timer stuff
         timer = 0.0f;
         fadingOut = false;
     }

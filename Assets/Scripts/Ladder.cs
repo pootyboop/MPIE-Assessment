@@ -14,7 +14,7 @@ public class Ladder : MonoBehaviour
 
 
 
-    void Start()
+    private void Start()
     {
         //mvmtScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
@@ -23,18 +23,22 @@ public class Ladder : MonoBehaviour
 
     private void Update()
     {
+        //if climbing the ladder
         if (isClimbed)
         {
+            //jump to drop off
             if (Input.GetButtonDown("Jump"))
             {
                 Use(false);
             }
 
+            //W to move forward
             else if (Input.GetAxis("Vertical") > 0)
             {
                 mvmtScript.transform.position += Vector3.up / climbSpeed * Time.deltaTime;
             }
 
+            //S to go down
             else if (Input.GetAxis("Vertical") < 0)
             {
                 mvmtScript.transform.position += Vector3.down / climbSpeed * Time.deltaTime;
@@ -44,6 +48,7 @@ public class Ladder : MonoBehaviour
 
 
 
+    //auto-climb when trigger is entered
     private void OnTriggerEnter(Collider other)
     {
         Use(true);
@@ -51,6 +56,7 @@ public class Ladder : MonoBehaviour
 
 
 
+    //auto-stop when trigger is exited
     private void OnTriggerExit(Collider other)
     {
         Use(false);
@@ -58,12 +64,14 @@ public class Ladder : MonoBehaviour
 
 
 
+    //setup stuff on player for climbing
     void Use(bool use)
     {
         if (use)
         {
             isClimbed = true;
             mvmtScript.useInput = false;
+            //do not want the player gliding or crouching on a ladder
             mvmtScript.TryGlideStop();
             mvmtScript.TryCrouchStop();
 

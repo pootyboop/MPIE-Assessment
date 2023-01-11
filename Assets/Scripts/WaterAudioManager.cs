@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//failed script. not used anymore
+//meant to play quiet water noises whenever the player was near water
+//this was replaced by a much simpler version over on the Water script
 public class WaterAudioManager : MonoBehaviour
 {
     private List<GameObject> overlappedWaterPlanes;

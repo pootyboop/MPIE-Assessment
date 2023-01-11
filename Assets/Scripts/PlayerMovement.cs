@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 
+//almost all player movement
+//and a bunch of other misc stuff
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -19,9 +21,9 @@ public class PlayerMovement : MonoBehaviour
     private Animator gliderAnim;
     public GameObject speedLines;
     private SpeedLines speedLinesScript;
-    public GameObject clothCollision;   //collides with cloths (e.g. cloths on doors) since CharacterController doesn't have a referenceable capsule collider
-                                        //probably could've done this with collision channels but whatever
-    private CapsuleCollider clothCapsule;
+    public GameObject clothCollision;               //collides with cloths (e.g. cloths on doors) since CharacterController doesn't have a referenceable capsule collider
+                                                    //probably could've done this with collision channels but whatever
+    private CapsuleCollider clothCapsule;           //the actual collider
     public GameObject landingParticles;
     private AudioSettings audioSettings;
     public FootstepManager footstepManager;
@@ -29,27 +31,27 @@ public class PlayerMovement : MonoBehaviour
     public FadeSFX boostSound;
     public FadeSFX glideStartSound;
     public FadeSFX glideStopSound;
-    public IslandMarkerUI islandMarkerUI;
-    private IslandMarker overlappedIslandMarker;
-    private string lastIslandMarker = "Cozy Isle";
-
-    //half height of the player collision capsule
-    //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
-    public float halfHeight = 1.0f;
+    public IslandMarkerUI islandMarkerUI;           //the UI to appear on landing on a new island
+    private IslandMarker overlappedIslandMarker;    //currently overlapped island marker trigger
+    private string lastIslandMarker = "Cozy Isle";  //most recently shown island title
+                                                    //this title will not be shown until a different one is displayed (and thus saved here)
+                                                    //set to Cozy Isle by default (the starter island) so the player isn't bombarded with UI when they start up    
+    public float halfHeight = 1.0f;                 //half height of the player collision capsule
+                                                    //cloth collision's height should always be halfHeight * 2 - 0.1 to prevent collision issues
 
     //public movement
-    public bool useInput = true;    //whether or not to accept player input
-    public bool useGravity = true;  //whether or not to use gravity
-    public bool glideToggle = true;     //whether glide controls are hold or toggle
-    public bool crouchToggle = false;   //whether crouch controls are hold or toggle
+    public bool useInput = true;                    //whether or not to accept player input
+    public bool useGravity = true;                  //whether or not to use gravity
+    public bool glideToggle = true;                 //whether glide controls are hold or toggle
+    public bool crouchToggle = false;               //whether crouch controls are hold or toggle
     public float moveSpeed = 5.0f;
-    public bool useSprint = false;  //enable/disable sprinting entirely (disabled by default)
+    public bool useSprint = false;                  //enable/disable sprinting entirely (disabled by default)
     public float sprintSpeedMultiplier = 1.5f;
     public float crouchSpeedMultiplier = 0.5f;
-    public float waterSpeedMultiplier = 0.8f;   //movement speed multiplier when semi-deep in water
+    public float waterSpeedMultiplier = 0.8f;       //movement speed multiplier when in water
     public float jumpHeight = 1.0f;
-    public float baseGravity = 9.81f;   //default movement gravity
-    public float glideGravity = 3.0f;   //gravity when gliding
+    public float baseGravity = 9.81f;               //default movement gravity
+    public float glideGravity = 3.0f;               //gravity when gliding
     public float glideMaxVerticalVelocity = 1.5f;   //the cap of how fast the player can go up/down while gliding
     public float airCannonBoostStrength = 10.0f;    //strength of air cannon boosts
     public float airCannonMaxTime = 0.5f;           //how long air cannon blasts last after leaving the air cannon's trigger collision
@@ -64,30 +66,30 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private float groundedTimer;
     private float verticalVelocity;
-    private float previousVerticalVelocity;
-    private float gravity;  //currently active gravity
-    private Vector3 airCannonMove;  //the movement vector from air cannon
-    private const float gliderTilt = 22.5f; //how much the glider mesh can tilt
-    private float respawnY = -20.0f;    //the Y position past which the player gets respawned at respawnPosition
-    private Vector3 respawnPosition;    //the player's last grounded position
+    private float previousVerticalVelocity;     //verticalVelocity from last Update()
+    private float gravity;                      //currently active gravity
+    private Vector3 airCannonMove;              //the movement vector from air cannon
+    private const float gliderTilt = 22.5f;     //how much the glider mesh can tilt
+    private float respawnY = -20.0f;            //the Y position past which the player gets respawned at respawnPosition
+    private Vector3 respawnPosition;            //the player's last grounded position
 
     //water
     public bool isInWater;
     private List<GameObject> overlappedWaterPlanes; //all water planes currently overlapped by the player - used to ensure isInWater stays true when moving across water planes
 
     //air cannon
-    private float airCannonTimer;   //the timer for lerping between player and air cannon movement after leaving the air cannon's trigger collision
-    private GameObject overlappedAirCannon; //the air cannon the player is getting boosted by
+    private float airCannonTimer;               //the timer for lerping between player and air cannon movement after leaving the air cannon's trigger collision
+    private GameObject overlappedAirCannon;     //the air cannon the player is getting boosted by
 
     //characters
-    private GameObject nearCharacter;   //the character the player is currently able to interact with
-    private Character nearCharacterScript;   //character script
-    public float lookDistance = 3.0f;   //how far away the player can interact with characters from
-    private int booksLeft; //how many books the player has left to deliver
+    private GameObject nearCharacter;           //the character the player is currently able to interact with
+    private Character nearCharacterScript;      //character script
+    public float lookDistance = 3.0f;           //how far away the player can interact with characters from
+    private int booksLeft;                      //how many books the player has left to deliver
 
     //dialogue
-    public Color dialogueColor;
-    private bool openedFinalDialogue = false;
+    public Color dialogueColor;                 //color of player dialogue text (NOT characters)
+    private bool openedFinalDialogue = false;   //just used for ending once the player has delivered all books
 
     //=============================================================================================================================================\\
 
@@ -106,11 +108,14 @@ public class PlayerMovement : MonoBehaviour
 
         overlappedWaterPlanes = new List<GameObject>();
 
+        //set up ladders
         GiveRefToObjects();
 
+        //update booksLeft
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
         canvas.SetBooksRemaining(booksLeft);
 
+        //spawn-in dialogue
         DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
         dialogueBox.SetContent("Finally... my novel is complete! Time to go deliver copies to everyone! They'll be so excited! I can't wait to see the looks on their faces!", dialogueColor);
     }
@@ -120,17 +125,26 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //GetLookedAtCharacter();
+
+        //check if the player tried to interact with a character
         UpdateInteractions();
 
         UpdateGrounded();
 
+        //doesn't run when in dialogue/settings or on a ladder
         if (useInput)
         {
+            //check if the player should start/stop gliding and act accordingly
             UpdateGliding();
+
+            //check if the player should start/stop crouching and act accordingly
             UpdateCrouch();
+
+            //actual movement
             Move();
         }
 
+        //otherwise input is disabled, so stop moving and disable footsteps
         else if (isMoving)
         {
             isMoving = false;
@@ -138,14 +152,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-        //check if player fell to respawnY
+        //check if player fell past respawnY height and respawn them if so
         CheckIfFallen();
 
+        //this will be used next Update() for calculating the new verticalVelocity
         previousVerticalVelocity = verticalVelocity;
     }
 
 
 
+    //anything related to glider tilt in this project is a failure. ignore it.
     private void FixedUpdate()
     {
         //UpdateGliderTilt();
@@ -157,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
     {
         switch (other.gameObject.tag)
         {
+            //entered water
             case "Water":
                 overlappedWaterPlanes.Add(other.gameObject);
                 isInWater = true;
@@ -165,6 +182,7 @@ public class PlayerMovement : MonoBehaviour
 
                 break;
 
+            //entered an air cannon's boost trigger
             case "Air Cannon":
                 airCannonTimer = airCannonMaxTime;
                 overlappedAirCannon = other.gameObject;
@@ -177,11 +195,13 @@ public class PlayerMovement : MonoBehaviour
                 speedLinesScript.SetOpacity(1.0f);
                 break;
 
+            //entered a character's interaction area
             case "Character":
                 nearCharacter = other.gameObject;
                 nearCharacterScript = nearCharacter.GetComponent<Character>();
                 break;
 
+            //entered the area around an island
             case "Island Marker":
                 overlappedIslandMarker = other.gameObject.GetComponent<IslandMarker>();
                 break;
@@ -194,6 +214,7 @@ public class PlayerMovement : MonoBehaviour
     {
         switch (other.gameObject.tag)
         {
+            //left water -- may still be in another water plane
             case "Water":
                 overlappedWaterPlanes.Remove(other.gameObject);
                 if (overlappedWaterPlanes.Count == 0)
@@ -203,15 +224,18 @@ public class PlayerMovement : MonoBehaviour
 
                 break;
 
+            //left air cannon trigger -- done boosting
             case "Air Cannon":
                 overlappedAirCannon = null;
                 break;
 
+            //left character's interaction radius
             case "Character":
                 nearCharacter = null;
                 nearCharacterScript = null;
                 break;
 
+            //left the area around an island
             case "Island Marker":
                 overlappedIslandMarker = null;
                 break;
@@ -220,10 +244,10 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //figure out the Vector3 to put into the player's Move()
     Vector3 AirCannonBoost(GameObject airCannon)
     {
         Vector3 finalBoost = airCannon.GetComponent<AirCannon>().Boost() * airCannonBoostStrength;
-        //print(finalBoost);
         return (finalBoost);
     }
 
@@ -236,8 +260,10 @@ public class PlayerMovement : MonoBehaviour
         {
             if (nearCharacter != null)
             {
+                //if the player can actually give the character the book
                 if (nearCharacterScript.TryGiveBook())
                 {
+                    //update number of books left to give
                     booksLeft--;
                     canvas.SetBooksRemaining(booksLeft);
                 }
@@ -247,6 +273,8 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //just pass a Player reference to ladders
+    //this is so that the player can be set active whenever and ladders will still work
     private void GiveRefToObjects()
     {
         Ladder[] ladders = FindObjectsOfType<Ladder>();
@@ -281,10 +309,12 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateGrounded()
     {
+        //charController knows isGrounded before this script does
+        //so when they disagree, we can use it for events for leaving the ground and landing
+
         if (!charController.isGrounded && isGrounded)
         {
-            respawnPosition = transform.position;
-            footstepManager.SetMovingGrounded(false);
+            OnLeftGround();
         }
 
         else if (charController.isGrounded && !isGrounded)
@@ -292,17 +322,16 @@ public class PlayerMovement : MonoBehaviour
             OnLanded();
         }
 
+        //now that the events are done they should be equal
         isGrounded = charController.isGrounded;
+
+
         if (isGrounded)
         {
+            //this timer is for coyote time for gliding and jumping
+            //mainly helps with slopes so the character walks naturally downhill
             groundedTimer = 0.2f;
         }
-
-        /*else if (isCrouching)
-        {
-            CrouchStop();
-        }
-        */
 
         if (groundedTimer > 0)
         {
@@ -312,17 +341,30 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    private void OnLeftGround()
+    {
+        respawnPosition = transform.position;
+        footstepManager.SetMovingGrounded(false);
+    }
+
+
+
     private void OnLanded()
     {
+        //stop gliding
         TryGlideStop();
+        //play gorunded music
         GroundedMusic();
+        //and check if the player should see an island title popup
         TryIslandMarker();
 
+        //also turn on footsteps if the player is moving
         if (isMoving)
         {
             footstepManager.SetMovingGrounded(true);
         }
 
+        //if landing hard, play particles and a footstep sound
         if (previousVerticalVelocity <= -glideMaxVerticalVelocity)
         {
             LandingParticles();
@@ -335,7 +377,7 @@ public class PlayerMovement : MonoBehaviour
     public void LandingParticles()
     {
         Vector3 landingParticlesSpawn = transform.position;
-        landingParticlesSpawn.y -= halfHeight;
+        landingParticlesSpawn.y -= halfHeight;  //place them at the character's feet. crouching is never an option when this function is called so halfHeight will always be the same
         Instantiate(landingParticles, landingParticlesSpawn, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
     }
 
@@ -343,6 +385,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void TryIslandMarker()
     {
+        //if on an island the player hasn't already just seen the title for
         if (overlappedIslandMarker != null && lastIslandMarker != overlappedIslandMarker.text)
         {
 
@@ -353,6 +396,8 @@ public class PlayerMovement : MonoBehaviour
             islandMarkerUI.gameObject.SetActive(true);
             islandMarkerUI.SetText(overlappedIslandMarker.text);
 
+            //update lastIslandMarker so we can check against it
+            //the player can now go back to the previous island and will see its title again
             lastIslandMarker = overlappedIslandMarker.text;
         }
     }
@@ -363,11 +408,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
+            //start gliding if not
             if (!isGliding)
             {
                 TryGlideStart();
             }
 
+            //but if glide is currently active and set to toggle (on by default), stop gliding
             else if (glideToggle)
             {
                 TryGlideStop();
@@ -376,6 +423,7 @@ public class PlayerMovement : MonoBehaviour
 
         else if (Input.GetButtonUp("Jump") && !glideToggle)
         {
+            //stop gliding if the button is released and glide mode is Hold
             TryGlideStop();
         }
     }
@@ -384,11 +432,14 @@ public class PlayerMovement : MonoBehaviour
 
     void TryGlideStart()
     {
+        //groundedTimer here prevents the player from immediately gliding
+        //which can be annoying when you jump and immediately glide if spamming spacebar
         if (!isGliding && groundedTimer <= 0)
         {
             isGliding = true;
             gravity = glideGravity;
 
+            //glide audio
             MidairMusic();
             windSound.SetState(FadeSFX.fadeState.FADEIN);
             glideStartSound.audioSource.Play();
@@ -416,11 +467,14 @@ public class PlayerMovement : MonoBehaviour
         {
             gravity = baseGravity;
             isGliding = false;
+
+            //audio
             windSound.SetState(FadeSFX.fadeState.FADEOUT);
             glideStopSound.audioSource.Play();
 
             gliderAnim.SetBool("isGliding", false);
-            gliderCloths.SetActive(false);
+            gliderCloths.SetActive(false);  //these are hidden when glider isn't active to prevent them from getting in the player's face
+                                            //also a little less cloth sim for unity to worry about
         }
     }
 
@@ -428,6 +482,10 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateCrouch()
     {
+        //same system as gliding for toggle vs hold
+        //except this time there's an additional check "tryingToStand"
+        //this is further explained in CanStand()
+
         if (Input.GetButtonDown("Crouch"))
         {
             if (!crouchToggle || (crouchToggle && !isCrouching))
@@ -458,10 +516,15 @@ public class PlayerMovement : MonoBehaviour
         {
             isCrouching = true;
             justStartedCrouching = true;
+
+            //resize colliders
             charController.height = halfHeight;
             clothCapsule.height = halfHeight - 0.1f;
+
+            //snap player to the floor AFTER resizing colliders
             transform.position = new Vector3(transform.position.x, transform.position.y - halfHeight, transform.position.z);
 
+            //tone down footsteps while crouching
             footstepManager.SetCrouched(true);
         }
     }
@@ -476,16 +539,24 @@ public class PlayerMovement : MonoBehaviour
         if (isCrouching && canStand)
         {
             isCrouching = false;
-            transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
-            charController.height = halfHeight * 2;
-            clothCapsule.height = halfHeight * 2 - 0.1f;
 
+            //move player back up BEFORE resizing colliders
+            transform.position = new Vector3(transform.position.x, transform.position.y + halfHeight, transform.position.z);
+
+            //resize colliders
+            charController.height = halfHeight * 2;
+            clothCapsule.height = halfHeight * 2 - 0.1f; //-0.1f to prevent clothCapsule from screwing with regular player collision
+
+            //return footsteps to normal
             footstepManager.SetCrouched(false);
         }
     }
 
 
 
+    //i prevent the player from uncrouching into an object by constantly checking above them when they want to uncrouch
+    //if anything's inside the area their head would be, they can't uncrouch
+    //once they're in the clear they automatically uncrouch unless they started intentionally crouching again
     bool CanStand()
     {
         
@@ -508,47 +579,36 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move;
 
-        //if (useInput)
-        //{
-
         //X AND Z MOVEMENT
         move = GetDesiredMvmt();
 
         //UpdateGliderTilt();
 
         move = ApplySpeedModifiers(move);
-        //}
-
-        //else
-        //{
-        //move = new Vector3(0.0f, 0.0f, 0.0f);
-        //}
 
 
 
+        //if player just left air cannon trigger, tick down the timer
         if (overlappedAirCannon == null && airCannonTimer > 0)
         {
             airCannonTimer -= Time.deltaTime;
         }
 
+        //used to lerp between air cannon boost and normal movement states
         float airCannonTimerAlpha = airCannonTimer / airCannonMaxTime;
-
-
-
-        //if (useGravity)
-        //{
 
         //Y MOVEMENT
         move.y = GetJumpHeight(airCannonTimerAlpha);
 
-        //}
-
-
+        //speed lines shown when air canon boosting
         UpdateSpeedLines(airCannonTimerAlpha);
+
+
 
         //lerp between normal and air cannon movement based on the timer alpha
         Vector3 finalMove = Vector3.Lerp(move, airCannonMove, airCannonTimerAlpha);
 
+        //and finally, actually move
         charController.Move(finalMove * Time.deltaTime);
     }
 
@@ -556,10 +616,15 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 GetDesiredMvmt()
     {
+        //get the forward and right vectors
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
+
+        //just take the x value
         forward.y = 0.0f;
         right.y = 0.0f;
+
+        //normalize
         forward = forward.normalized;
         right = right.normalized;
 
@@ -568,14 +633,17 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateIsMoving(horizontal, vertical);
 
+        //multiply normalized vectors by player movement input (meaning the character moves relative to its rotation)
         Vector3 forwardRelativeInput = forward * vertical;
         Vector3 rightRelativeInput = right * horizontal;
 
+        //and when all that's done, multiply by moveSpeed
         return (forwardRelativeInput + rightRelativeInput) * moveSpeed;
     }
 
 
 
+    //TLDR: lets the footstep manager know if we're moving
     void UpdateIsMoving (float horizontal, float vertical)
     {
         if (!isMoving && (vertical != 0.0f || horizontal != 0.0f))
@@ -598,6 +666,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //fairly straightforward, just take the modifiers into account
     Vector3 ApplySpeedModifiers(Vector3 move)
     {
         if (isCrouching)
@@ -621,6 +690,8 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //failure of a feature
+    //ignore
     void UpdateGliderTilt()
     {
         if (isGliding)
@@ -668,17 +739,22 @@ public class PlayerMovement : MonoBehaviour
                 verticalVelocity = 0f;
             }
 
+            //take gravity into account
             verticalVelocity -= gravity * Time.deltaTime;
 
 
+            //if player is allowed to jump
             if (Input.GetButtonDown("Jump") && groundedTimer > 0 && useInput)
             {
                 TryCrouchStop();
 
                 groundedTimer = 0;
+
+                //jump
                 verticalVelocity += Mathf.Sqrt(jumpHeight * 2 * gravity);
             }
 
+            //verticalVelocity is clamped when gliding so that you actually glide
             if (isGliding)
             {
                 verticalVelocity = Mathf.Clamp(verticalVelocity, -glideMaxVerticalVelocity, glideMaxVerticalVelocity);
@@ -690,6 +766,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //fades speed lines out when leaving an air cannon trigger
     void UpdateSpeedLines(float airCannonTimerAlpha)
     {
         if (airCannonTimerAlpha > 0)
@@ -707,11 +784,13 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckIfFallen()
     {
+        //if player fell off the map
         if (transform.position.y < respawnY)
         {
+            //respawn
             transform.position = respawnPosition;
 
-            //dialogue
+            //cheeky respawn dialogue
             DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
             dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books in 5 to 6 minutes!", dialogueColor);
         }
@@ -721,17 +800,22 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDialogueClosed()
     {
+        //end of game stuff
         if (booksLeft == 0)
         {
             if (!openedFinalDialogue)
             {
+                //final dialogue
+
                 DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
-                dialogueBox.SetContent("They´re all delivered. I can´t wait to read the reviews! Well then, I suppose it´s time to start a new book!", dialogueColor);
+                dialogueBox.SetContent("They're all delivered. I can't wait to read the reviews! Well then, I suppose it's time to start a new book!", dialogueColor);
                 openedFinalDialogue = true;
             }
 
             else
             {
+                //end the game
+
                 //dialogueBox.SetContent("Well then, nothing left to do except start a new book!", dialogueColor);
                 startMenu.gameObject.SetActive(true);
                 startMenu.EndMenu();
@@ -743,8 +827,10 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //music that plays while gliding or air cannon boosting
     private void MidairMusic()
     {
+        //melody, trill chords
         audioSettings.SetTrackFade(0, true);
         audioSettings.SetTrackFade(1, true);
         audioSettings.SetTrackFade(2, false);
@@ -753,8 +839,10 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    //music that plays when on the ground
     private void GroundedMusic()
     {
+        //trill chords, low chords and bass, drums
         audioSettings.SetTrackFade(0, false);
         audioSettings.SetTrackFade(2, true);
         audioSettings.SetTrackFade(3, true);
