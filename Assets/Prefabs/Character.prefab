@@ -746,6 +746,7 @@ MonoBehaviour:
   charUI: {fileID: 0}
   getBookSound: {fileID: 7489426279385307519}
   voiceSound: {fileID: 1550486331802575431}
+  voiceVolume: 0.9
 --- !u!135 &8256807711652069568
 SphereCollider:
   m_ObjectHideFlags: 0

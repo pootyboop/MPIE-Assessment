@@ -187,4 +187,11 @@ public class Settings : MonoBehaviour
             crouchToggle.text = "Toggle";
         }
     }
+
+
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

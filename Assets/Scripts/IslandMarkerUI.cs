@@ -16,7 +16,7 @@ public class IslandMarkerUI : MonoBehaviour
 
     private void Start()
     {
-        text.rectTransform.anchoredPosition = new Vector3(0, 230, 0);
+        //text.rectTransform.anchoredPosition = new Vector3(0, 230, 0);
     }
 
 
@@ -59,13 +59,15 @@ public class IslandMarkerUI : MonoBehaviour
             //dead
             else
             {
-                Destroy(gameObject);
+                timer = 0.0f;
+                fadingOut = false;
+                gameObject.SetActive(false);
             }
         }
 
         /*
         //fading out
-        else if (timer < fadeInOutTime * 2.0f + stayTime + 0.1f) //the hardcoded 0.1f ensures a clean alpha transition
+        else if (timer < fadeInOutTime * 2.0f + stayTime + 0.1f)
         {
             alpha = 1.0f - ((timer + fadeInOutTime + stayTime) / (fadeInOutTime * 2.0f + stayTime));
         }
@@ -87,5 +89,7 @@ public class IslandMarkerUI : MonoBehaviour
     public void SetText(string newText)
     {
         text.text = newText;
+        timer = 0.0f;
+        fadingOut = false;
     }
 }

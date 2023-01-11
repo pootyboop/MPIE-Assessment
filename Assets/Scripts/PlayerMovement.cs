@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     public FadeSFX boostSound;
     public FadeSFX glideStartSound;
     public FadeSFX glideStopSound;
-    public IslandMarkerUI islandMarkerUIPrefab;
+    public IslandMarkerUI islandMarkerUI;
     private IslandMarker overlappedIslandMarker;
     private string lastIslandMarker = "Cozy Isle";
 
@@ -289,19 +289,7 @@ public class PlayerMovement : MonoBehaviour
 
         else if (charController.isGrounded && !isGrounded)
         {
-            TryGlideStop();
-            GroundedMusic();
-            TryIslandMarker();
-
-            if (isMoving) {
-                footstepManager.SetMovingGrounded(true);
-            }
-
-            if (previousVerticalVelocity <= -glideMaxVerticalVelocity)
-            {
-                LandingParticles();
-                footstepManager.Step();
-            }
+            OnLanded();
         }
 
         isGrounded = charController.isGrounded;
@@ -324,6 +312,26 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    private void OnLanded()
+    {
+        TryGlideStop();
+        GroundedMusic();
+        TryIslandMarker();
+
+        if (isMoving)
+        {
+            footstepManager.SetMovingGrounded(true);
+        }
+
+        if (previousVerticalVelocity <= -glideMaxVerticalVelocity)
+        {
+            LandingParticles();
+            footstepManager.Step();
+        }
+    }
+
+
+
     public void LandingParticles()
     {
         Vector3 landingParticlesSpawn = transform.position;
@@ -337,8 +345,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (overlappedIslandMarker != null && lastIslandMarker != overlappedIslandMarker.text)
         {
-            IslandMarkerUI islandMarkerUI = Instantiate(islandMarkerUIPrefab);
-            islandMarkerUI.transform.SetParent(canvas.transform);
+
+            //IslandMarkerUI islandMarkerUI = Instantiate(islandMarkerUIPrefab);
+            //islandMarkerUI.transform.SetParent(canvas.transform);
+            //islandMarkerUI.SetText(overlappedIslandMarker.text);
+
+            islandMarkerUI.gameObject.SetActive(true);
             islandMarkerUI.SetText(overlappedIslandMarker.text);
 
             lastIslandMarker = overlappedIslandMarker.text;
@@ -533,8 +545,6 @@ public class PlayerMovement : MonoBehaviour
 
 
         UpdateSpeedLines(airCannonTimerAlpha);
-
-
 
         //lerp between normal and air cannon movement based on the timer alpha
         Vector3 finalMove = Vector3.Lerp(move, airCannonMove, airCannonTimerAlpha);

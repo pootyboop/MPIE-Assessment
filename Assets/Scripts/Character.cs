@@ -28,6 +28,7 @@ public class Character : MonoBehaviour
     private AudioSettings audioSettings;
     public AudioSource getBookSound;
     public AudioSource voiceSound;
+    public float voiceVolume = 1.0f;
 
 
 
@@ -105,7 +106,7 @@ public class Character : MonoBehaviour
 
         //play audio
         getBookSound.volume = audioSettings.sfxVolume;
-        voiceSound.volume = audioSettings.sfxVolume;
+        voiceSound.volume = audioSettings.sfxVolume * voiceVolume;
         getBookSound.Play();
         voiceSound.Play();
 
