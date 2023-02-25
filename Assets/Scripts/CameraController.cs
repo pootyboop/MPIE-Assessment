@@ -36,9 +36,6 @@ public class CameraController : MonoBehaviour
 
             transform.rotation = Quaternion.Euler(rot.x, 0.0f, 0.0f);
             transform.parent.gameObject.transform.Rotate(new Vector3(0f, rot.y, 0f));
-
-            //transform.eulerAngles = new Vector3(rot.x, rot.y, 0f);
-            //transform.parent.gameObject.transform.rotation = Quaternion.Euler(0f, rot.y, 0f);
         }
     }
 }

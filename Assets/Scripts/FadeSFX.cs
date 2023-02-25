@@ -96,14 +96,6 @@ public class FadeSFX : MonoBehaviour
             //immediately play at full volume
             case fadeState.PLAYING:
                 audioSource.volume = maxVolume;
-                /*
-
-            case fadeState.FADEIN:
-                if (!audioSource.isPlaying)
-                {
-                    audioSource.Play();
-                }
-                */
                 break;
         }
     }

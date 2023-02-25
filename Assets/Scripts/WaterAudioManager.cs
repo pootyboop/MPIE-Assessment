@@ -19,13 +19,6 @@ public class WaterAudioManager : MonoBehaviour
 
 
 
-    private void Update()
-    {
-        //gameObject.transform.position = player.transform.position;
-    }
-
-
-
     public void StartOverlapWater(GameObject other)
     {
         print("SUCCESS!!!!!!!!!!!");

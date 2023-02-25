@@ -10,6 +10,7 @@ TagManager:
   - Character
   - Water Audio Manager
   - Island Marker
+  - Map
   layers:
   - Default
   - TransparentFX

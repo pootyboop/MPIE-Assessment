@@ -25,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
                                                     //probably could've done this with collision channels but whatever
     private CapsuleCollider clothCapsule;           //the actual collider
     public GameObject landingParticles;
+    public GameObject map;
+    public GameObject settingsBook;
     private AudioSettings audioSettings;
     public FootstepManager footstepManager;
     public FadeSFX windSound;
@@ -72,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
     private const float gliderTilt = 22.5f;     //how much the glider mesh can tilt
     private float respawnY = -20.0f;            //the Y position past which the player gets respawned at respawnPosition
     private Vector3 respawnPosition;            //the player's last grounded position
+    private bool isMap = false;                 //is the map open
+    public bool hiddenBook = false;            //is the settings book hidden
 
     //water
     public bool isInWater;
@@ -124,8 +128,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        //GetLookedAtCharacter();
-
         //check if the player tried to interact with a character
         UpdateInteractions();
 
@@ -151,6 +153,9 @@ public class PlayerMovement : MonoBehaviour
             footstepManager.SetMovingGrounded(false);
         }
 
+        CheckMap();
+        CheckHideBook();
+
 
         //check if player fell past respawnY height and respawn them if so
         CheckIfFallen();
@@ -161,10 +166,46 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    //anything related to glider tilt in this project is a failure. ignore it.
-    private void FixedUpdate()
+    private void CheckMap()
     {
-        //UpdateGliderTilt();
+        if (Input.GetButtonDown("Map") && !isMap && useInput)
+        {
+            isMap = true;
+            map.SetActive(true);
+
+            Character[] characters = GameObject.FindObjectsOfType<Character>();
+
+            for (int i = 0; i < characters.Length; i++)
+            {
+                if (characters[i].hasBook)
+                {
+                    characters[i].mapIcon.SetActive(false);
+                }
+            }
+        }
+
+        else if (Input.GetButtonDown("Map") && isMap && useInput)
+        {
+            isMap = false;
+            map.SetActive(false);
+        }
+    }
+
+
+
+    private void CheckHideBook()
+    {
+        if (Input.GetButtonDown("HideBook") && !hiddenBook && useInput)
+        {
+            hiddenBook = true;
+            settingsBook.transform.localScale = new Vector3(0f, 0f, 0f);
+        }
+
+        else if (Input.GetButtonDown("HideBook") && hiddenBook && useInput)
+        {
+            hiddenBook = false;
+            settingsBook.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
     }
 
 
@@ -286,27 +327,6 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    //deprecated
-    void GetLookedAtCharacter()
-    {
-        RaycastHit hitInfo;
-        bool raycastHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out hitInfo, lookDistance);
-        //Debug.DrawRay(cam.transform.position, cam.transform.forward * lookDistance, Color.white, 1.0f);
-
-        if (raycastHit)
-        {
-            print("Looking at " + hitInfo.transform.gameObject);
-            //if (hitInfo)
-        }
-
-        else
-        {
-            print("Looking at nothing");
-        }
-    }
-
-
-
     void UpdateGrounded()
     {
         //charController knows isGrounded before this script does
@@ -353,7 +373,7 @@ public class PlayerMovement : MonoBehaviour
     {
         //stop gliding
         TryGlideStop();
-        //play gorunded music
+        //play grounded music
         GroundedMusic();
         //and check if the player should see an island title popup
         TryIslandMarker();
@@ -388,11 +408,6 @@ public class PlayerMovement : MonoBehaviour
         //if on an island the player hasn't already just seen the title for
         if (overlappedIslandMarker != null && lastIslandMarker != overlappedIslandMarker.text)
         {
-
-            //IslandMarkerUI islandMarkerUI = Instantiate(islandMarkerUIPrefab);
-            //islandMarkerUI.transform.SetParent(canvas.transform);
-            //islandMarkerUI.SetText(overlappedIslandMarker.text);
-
             islandMarkerUI.gameObject.SetActive(true);
             islandMarkerUI.SetText(overlappedIslandMarker.text);
 
@@ -582,8 +597,6 @@ public class PlayerMovement : MonoBehaviour
         //X AND Z MOVEMENT
         move = GetDesiredMvmt();
 
-        //UpdateGliderTilt();
-
         move = ApplySpeedModifiers(move);
 
 
@@ -690,26 +703,6 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    //failure of a feature
-    //ignore
-    void UpdateGliderTilt()
-    {
-        if (isGliding)
-        {
-            float gliderY = gliderMesh.transform.rotation.y;
-            Quaternion newRot = Quaternion.RotateTowards(gliderMesh.transform.rotation, Quaternion.LookRotation(charController.velocity.normalized), 360 * Time.fixedDeltaTime);
-            gliderMesh.transform.rotation = Quaternion.Euler(newRot.x, gliderY, newRot.z);
-            /*
-            float horizontalInputAlpha = (Input.GetAxis("Horizontal") / 2) + 0.5f;
-            float gliderY = Mathf.Lerp(-gliderTilt, gliderTilt, horizontalInputAlpha);
-
-            gliderMesh.transform.localRotation = Quaternion.Euler(gliderMesh.transform.localRotation.x, gliderY, gliderMesh.transform.localRotation.z);
-            */
-        }
-    }
-
-
-
     float GetJumpHeight(float airCannonTimerAlpha)
     {
         //immediately snap to ground when crouching
@@ -792,7 +785,7 @@ public class PlayerMovement : MonoBehaviour
 
             //cheeky respawn dialogue
             DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);
-            dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books in 5 to 6 minutes!", dialogueColor);
+            dialogueBox.SetContent("Oops! Better watch my step if I'm gonna deliver all these books!", dialogueColor);
         }
     }
 
@@ -815,8 +808,6 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 //end the game
-
-                //dialogueBox.SetContent("Well then, nothing left to do except start a new book!", dialogueColor);
                 startMenu.gameObject.SetActive(true);
                 startMenu.EndMenu();
             }

@@ -30,8 +30,6 @@ public class Settings : MonoBehaviour
         animator = settingsBook.GetComponent<Animator>();
         playerMvmt = gameObject.GetComponent<PlayerMovement>();
         cam = Camera.main.GetComponent<CameraController>();
-
-        //animator.SetTrigger("closeBook");
     }
 
 
@@ -79,6 +77,11 @@ public class Settings : MonoBehaviour
         {
             charUI.gameObject.SetActive(false);
         }
+
+        if (playerMvmt.hiddenBook)
+        {
+            settingsBook.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
     }
 
 
@@ -121,6 +124,10 @@ public class Settings : MonoBehaviour
         else
         {
             bookCanvas.SetActive(false);
+            if (playerMvmt.hiddenBook)
+            {
+                settingsBook.transform.localScale = new Vector3(0f, 0f, 0f);
+            }
         }
     }
 

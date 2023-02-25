@@ -180,7 +180,6 @@ public class StartMenu : MonoBehaviour
         isEnd = true;
         title.text = ("The End");
         pressStart.text = ("(Press Space to quit)");
-        //pressStart.gameObject.SetActive(false);
 
         OpenMenu();
     }

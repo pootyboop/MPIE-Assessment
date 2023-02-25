@@ -14,13 +14,6 @@ public class Ladder : MonoBehaviour
 
 
 
-    private void Start()
-    {
-        //mvmtScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-    }
-
-
-
     private void Update()
     {
         //if climbing the ladder

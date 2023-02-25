@@ -70,25 +70,6 @@ public class IslandMarkerUI : MonoBehaviour
             }
         }
 
-
-
-        //code graveyard
-        /*
-        //fading out
-        else if (timer < fadeInOutTime * 2.0f + stayTime + 0.1f)
-        {
-            alpha = 1.0f - ((timer + fadeInOutTime + stayTime) / (fadeInOutTime * 2.0f + stayTime));
-        }
-
-        //done
-        else
-        {
-            Destroy(gameObject);
-            alpha = 0.0f;    //this is just here to juke an error - it doesn't realize it'll never use this
-        }
-        */
-
-
         text.color = new Color(0.0f, 0.0f, 0.0f, alpha);
     }
 

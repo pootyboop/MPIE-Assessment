@@ -9,6 +9,8 @@ public class Character : MonoBehaviour
         IDLE, LAY, SIT1, SIT2, TPOSE
     }
 
+    public GameObject mapIcon;  //map icon displayed on map
+
     public GameObject head; //character UI attaches here
     public GameObject bookMesh; //mesh to appear in left hand when given a book
     public bool hasBook = false;
@@ -85,8 +87,6 @@ public class Character : MonoBehaviour
     {
         if (!hasBook)
         {
-            hasBook = true;
-
             GiveBook();
 
             return true;
@@ -102,6 +102,8 @@ public class Character : MonoBehaviour
 
     private void GiveBook()
     {
+        hasBook = true;
+
         //activate book mesh and spawn particles
         bookMesh.SetActive(true);
         Instantiate(bookParticles, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
@@ -119,5 +121,7 @@ public class Character : MonoBehaviour
         //create dialogue
         DialogueBox dialogueBox = Instantiate(characterDialogueGameObject, UICanvas.transform);
         dialogueBox.SetContent(dialogue, new Color(0.0f, 0.0f, 0.0f), this);
+
+        mapIcon.SetActive(false);
     }
 }

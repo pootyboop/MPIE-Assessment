@@ -11,23 +11,4 @@ public class FINBook : MonoBehaviour
         animator = GetComponent<Animator>();
         animator.SetTrigger("openBook");
     }
-
-
-
-    void Update()
-    {
-        //print(transform.position);
-
-        /*
-        if (Input.GetKeyDown("t"))
-        {
-            animator.SetTrigger("closeBook");
-        }
-
-        if (Input.GetKeyDown("y"))
-        {
-            animator.SetTrigger("openBook");
-        }
-        */
-    }
 }
