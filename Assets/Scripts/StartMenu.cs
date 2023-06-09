@@ -107,6 +107,8 @@ public class StartMenu : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
+            CloseMenu();
+            /*
             if (isEnd)
             {
                 Application.Quit();
@@ -116,6 +118,7 @@ public class StartMenu : MonoBehaviour
             {
                 CloseMenu();
             }
+            */
         }
     }
 
@@ -167,6 +170,14 @@ public class StartMenu : MonoBehaviour
         index = 0;
         cams[index].gameObject.SetActive(false);
         gameObject.SetActive(false);
+
+        Character[] characters = GameObject.FindObjectsOfType<Character>();
+        for (int i = 0; i < characters.Length; i++)
+        {
+            characters[i].ResetHasBook();
+        }
+
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().SetupPlayer();
     }
 
 
@@ -175,12 +186,38 @@ public class StartMenu : MonoBehaviour
     public void EndMenu()
     {
         //make sure to destroy most recent character UI
-        Destroy(FindObjectOfType<CharacterUI>().gameObject);
+        CharacterUI recentCharUI = GameObject.FindObjectOfType<CharacterUI>();
+        if (recentCharUI != null)
+        {
+            Destroy(recentCharUI.gameObject);
+        }
+
+        /*a
+        GameObject settingsCanvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
+        if (settingsCanvas != null)
+        {
+            settingsCanvas.SetActive(false);
+        }
+        */
+
+        Settings settings = GameObject.FindObjectOfType<Settings>();
+        if (settings.isOpen)
+        {
+            settings.CloseSettings();
+        }
 
         isEnd = true;
         title.text = ("The End");
-        pressStart.text = ("(Press Space to quit)");
+        pressStart.text = ("(Press Space to play again)");
 
         OpenMenu();
+    }
+
+
+
+    public void RestartGame()
+    {
+        EndMenu();
+        CloseMenu();
     }
 }

@@ -101,6 +101,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        
+    }
+
+
+
+    public void SetupPlayer()
+    {
         //init variables/references
         gliderAnim = gliderMesh.GetComponent<Animator>();
         charController = GetComponent<CharacterController>();
@@ -118,6 +125,18 @@ public class PlayerMovement : MonoBehaviour
         //update booksLeft
         booksLeft = GameObject.FindGameObjectsWithTag("Character").Length;
         canvas.SetBooksRemaining(booksLeft);
+
+        //align to spawn point
+        Transform spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").transform;
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+
+        //reset starting stats
+        lastIslandMarker = "Cozy Isle";
+        openedFinalDialogue = false;
+        cam.GetComponent<CameraController>().Setup();
+        hiddenBook = false;
+        isMap = false;
 
         //spawn-in dialogue
         DialogueBox dialogueBox = Instantiate(dialogueGameObject, canvas.gameObject.transform);

@@ -19,7 +19,7 @@ public class Settings : MonoBehaviour
     public FadeSFX openBookSound;
     public FadeSFX closeBookSound;
 
-    private bool isOpen = false;            //is player in settings
+    public bool isOpen = false;            //is player in settings
     private bool previousUseInput;          //used to reset useInput to whatever it was before opening settings
 
     private CharacterUI charUI;
@@ -62,7 +62,7 @@ public class Settings : MonoBehaviour
 
         //give the mouse cursor back and lock the camera
         cam.useMouseInput = false;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         //hide books left icon in bottom left
@@ -86,7 +86,7 @@ public class Settings : MonoBehaviour
 
 
 
-    void CloseSettings()
+    public void CloseSettings()
     {
         isOpen = false;
         //put useInput back to its old value

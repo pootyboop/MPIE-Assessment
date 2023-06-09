@@ -5,14 +5,23 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public float sensitivity = 400.0f;
-    Vector2 rot = new Vector2(0f, 0f);
+    public Vector2 rot = new Vector2(0f, 0f);
     public bool useMouseInput = true;
 
     void Start()
     {
+        
+    }
+
+
+    public void Setup()
+    {
         //hide mouse
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        rot = new Vector2(0f, 0f);
+        transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
     }
 
     void Update()

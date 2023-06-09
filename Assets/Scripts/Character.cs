@@ -87,7 +87,7 @@ public class Character : MonoBehaviour
     {
         if (!hasBook)
         {
-            GiveBook();
+            GiveBook(true);
 
             return true;
         }
@@ -100,28 +100,37 @@ public class Character : MonoBehaviour
 
 
 
-    private void GiveBook()
+    private void GiveBook(bool givingBook)
     {
-        hasBook = true;
+        hasBook = givingBook;
 
         //activate book mesh and spawn particles
-        bookMesh.SetActive(true);
-        Instantiate(bookParticles, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+        bookMesh.SetActive(givingBook);
 
-        //play audio
-        getBookSound.volume = audioSettings.sfxVolume;
-        voiceSound.volume = audioSettings.sfxVolume * voiceVolume;
-        getBookSound.Play();
-        voiceSound.Play();
+        if (givingBook)
+        {
+            Instantiate(bookParticles, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
 
-        //turn off charUI when dialogue is open
-        charUI.GaveBook();
-        charUI.gameObject.SetActive(false);
+            //play audio
+            getBookSound.volume = audioSettings.sfxVolume;
+            voiceSound.volume = audioSettings.sfxVolume * voiceVolume;
+            getBookSound.Play();
+            voiceSound.Play();
 
-        //create dialogue
-        DialogueBox dialogueBox = Instantiate(characterDialogueGameObject, UICanvas.transform);
-        dialogueBox.SetContent(dialogue, new Color(0.0f, 0.0f, 0.0f), this);
+            //turn off charUI when dialogue is open
+            charUI.GaveBook();
+            charUI.gameObject.SetActive(false);
 
-        mapIcon.SetActive(false);
+            //create dialogue
+            DialogueBox dialogueBox = Instantiate(characterDialogueGameObject, UICanvas.transform);
+            dialogueBox.SetContent(dialogue, new Color(0.0f, 0.0f, 0.0f), this);
+        }
+
+        mapIcon.SetActive(!givingBook);
+    }
+
+    public void ResetHasBook()
+    {
+        GiveBook(false);
     }
 }
